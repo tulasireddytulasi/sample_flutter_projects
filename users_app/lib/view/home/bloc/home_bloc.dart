@@ -31,6 +31,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     } catch (e, s) {
       print("Error: $e");
       print("Error Stack: $s");
+      emit(const UsersDataError());
     }
   }
 }
