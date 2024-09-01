@@ -17,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final String baseURL = "https://image.tmdb.org/t/p/w185";
+  final String imgURL = "https://image.tmdb.org/t/p/w500";
   final HomeBloc homeBloc = HomeBloc();
   int pageNo = 1;
   final PagingController<int, Result> _pagingController = PagingController(firstPageKey: 1);
@@ -84,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
               builderDelegate: PagedChildBuilderDelegate<Result>(
                 itemBuilder: (context, item, index) {
                   final String imgUrlVal = item.profilePath ?? "";
-                  final String imgUrl = imgUrlVal.isEmpty ? imgUrlVal : baseURL + imgUrlVal;
+                  final String imgUrl = imgUrlVal.isEmpty ? imgUrlVal : imgURL + imgUrlVal;
 
                   return InkWell(
                     onTap: () {
