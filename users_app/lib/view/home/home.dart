@@ -17,8 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final String baseURL = "https://image.tmdb.org/t/p/w185";
   final HomeBloc homeBloc = HomeBloc();
-  int pageNo = 0;
-  static const _pageSize = 20;
+  int pageNo = 1;
   final PagingController<int, Result> _pagingController = PagingController(firstPageKey: 1);
 
   @override
@@ -58,8 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
             if (state.runtimeType == UsersDataLoaded) {
               final myData = state as UsersDataLoaded;
               final List<Result> data = myData.usersData;
-              pageNo = pageNo + 1;
-              print("pageNo: $pageNo");
+              pageNo++;
               _pagingController.appendPage(data, pageNo);
             }
           },
