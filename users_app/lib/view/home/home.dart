@@ -4,6 +4,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:users_app/core/utils/constants.dart';
 import 'package:users_app/core/utils/custom_colors.dart';
 import 'package:users_app/model/actor_model.dart';
+import 'package:users_app/view/details/details.dart';
 import 'package:users_app/view/home/bloc/home_bloc.dart';
 import 'package:users_app/view/home/widget/user_card.dart';
 
@@ -54,11 +55,27 @@ class _HomeScreenState extends State<HomeScreen> {
         child: BlocConsumer<HomeBloc, HomeState>(
           bloc: homeBloc,
           listener: (context, state) {
-            if (state.runtimeType == UsersDataLoaded) {
-              final myData = state as UsersDataLoaded;
-              final List<Result> data = myData.usersData;
-              pageNo++;
-              _pagingController.appendPage(data, pageNo);
+            print("state: ${state.runtimeType}");
+            try {
+              if (state is NavigateToDetailsState) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetailsScreen(
+                      imgURL: state.imgUrl,
+                      imgTag: state.imgTag,
+                    ),
+                  ),
+                );
+              }
+              if (state.runtimeType == UsersDataLoaded) {
+                final myData = state as UsersDataLoaded;
+                final List<Result> data = myData.usersData;
+                pageNo++;
+                _pagingController.appendPage(data, pageNo);
+              }
+            } catch (e) {
+              print("Error: $e");
             }
           },
           builder: (context, state) {
@@ -66,13 +83,31 @@ class _HomeScreenState extends State<HomeScreen> {
               pagingController: _pagingController,
               builderDelegate: PagedChildBuilderDelegate<Result>(
                 itemBuilder: (context, item, index) {
-                  return UserCard(
-                    name: item.name ?? "",
-                    dob: item.knownForDepartment ?? "",
-                    gender: (item.gender ?? 1) == 2 ? "Male" : "Female",
-                    picUrl: baseURL + (item.profilePath ?? ""),
-                    info: Constants.bio,
-                    location: "vizag, Andhra Pradesh - 530017",
+                  final String imgUrlVal = item.profilePath ?? "";
+                  final String imgUrl = imgUrlVal.isEmpty ? imgUrlVal : baseURL + imgUrlVal;
+
+                  return InkWell(
+                    onTap: () {
+                      try {
+                        homeBloc.add(
+                          NavigateToDetailsEvent(
+                            dateNow: DateTime.now().toIso8601String(),
+                            imgUrl: imgUrl,
+                            imgTag: item.name ?? "",
+                          ),
+                        );
+                      } catch (e) {
+                        print("Error: $e");
+                      }
+                    },
+                    child: UserCard(
+                      name: item.name ?? "",
+                      dob: item.knownForDepartment ?? "",
+                      gender: (item.gender ?? 1) == 2 ? "Male" : "Female",
+                      picUrl: imgUrl,
+                      info: Constants.bio,
+                      location: "vizag, Andhra Pradesh - 530017",
+                    ),
                   );
                 },
               ),

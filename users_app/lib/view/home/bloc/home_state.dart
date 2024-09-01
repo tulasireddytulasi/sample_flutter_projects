@@ -32,3 +32,13 @@ class UsersDataError extends HomeState {
   @override
   List<Object?> get props => [];
 }
+
+class NavigateToDetailsState extends HomeState {
+  const NavigateToDetailsState({required this.imgUrl, required this.imgTag, required this.dateNow});
+  final String imgUrl;
+  final String imgTag;
+  final String dateNow;
+
+  @override
+  List<Object?> get props => [imgUrl, imgTag, dateNow];
+}

@@ -16,3 +16,14 @@ final class LoadUserData extends HomeEvent{
   @override
   List<Object?> get props => [pageNo];
 }
+
+final class NavigateToDetailsEvent extends HomeEvent{
+  const NavigateToDetailsEvent({required this.imgUrl, required this.imgTag, required this.dateNow});
+  final String imgUrl;
+  final String imgTag;
+  final String dateNow;
+
+  @override
+  List<Object?> get props => [imgUrl, imgTag, dateNow];
+}
+

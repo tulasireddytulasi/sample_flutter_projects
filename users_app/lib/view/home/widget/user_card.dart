@@ -34,15 +34,24 @@ class UserCard extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  child: Image.network(
-                    picUrl,
-                    fit: BoxFit.cover,
-                    width: 100,
-                    height: 100,
-                  ),
-                ),
+                child: picUrl.isEmpty
+                    ? Container(
+                        width: 100,
+                        height: 100,
+                        color: CustomColors.white,
+                      )
+                    : Hero(
+                        tag: name,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),
+                          child: Image.network(
+                            picUrl,
+                            fit: BoxFit.cover,
+                            width: 100,
+                            height: 100,
+                          ),
+                        ),
+                      ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),

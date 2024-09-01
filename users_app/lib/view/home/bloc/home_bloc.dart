@@ -15,6 +15,7 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(const HomeInitial()) {
     on<LoadUserData>(_start);
+    on<NavigateToDetailsEvent>(_navigateToDetails);
   }
 
   Future<FutureOr<void>> _start(LoadUserData homeEvent, Emitter<HomeState> emit) async {
@@ -33,5 +34,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       print("Error Stack: $s");
       emit(const UsersDataError());
     }
+  }
+
+  FutureOr<void> _navigateToDetails(NavigateToDetailsEvent navigationEvent, Emitter<HomeState> emit) {
+    emit(NavigateToDetailsState(dateNow: navigationEvent.dateNow, imgUrl: navigationEvent.imgUrl, imgTag: navigationEvent.imgTag));
   }
 }
