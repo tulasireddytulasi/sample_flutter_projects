@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:untitled/puzle.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -9,14 +8,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
-  @override
-  void initState() {
-    super.initState();
-    //puzle();
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -74,29 +65,12 @@ class ChessBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => puzle(),
-      child: Container(
-        margin: const EdgeInsets.all(4),
-        alignment: Alignment.center,
-        width: 60,
-        height: 60,
-        color: color,
-      ),
+    return Container(
+      margin: const EdgeInsets.all(4),
+      alignment: Alignment.center,
+      width: 60,
+      height: 60,
+      color: color,
     );
   }
-}
-
-void puzle(){
-  print("ttttttttttttttttttttt");
-  List<List<int?>> initialGrid = [
-    [1, 5, 12, 10],
-    [2, 14, 7, 15],
-    [9, 4, 11, 3],
-    [13, 6, 8, null]
-  ];
-  print("uuuuuuuuuuuuuuuu");
-  PuzzleState? solution = solvePuzzle(initialGrid);
-  print("hhhhhhhhhhh");
-  printSolution(solution);
 }
