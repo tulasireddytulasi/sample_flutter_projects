@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapScreen extends StatefulWidget {
+  const GoogleMapScreen({super.key});
+
   @override
-  _GoogleMapScreenState createState() => _GoogleMapScreenState();
+  State<GoogleMapScreen> createState() => _GoogleMapScreenState();
 }
 
 class _GoogleMapScreenState extends State<GoogleMapScreen> {
   GoogleMapController? _controller;
 
   // Set initial position for the map
-  final LatLng _initialPosition = LatLng(37.77483, -122.41942); // San Francisco
+  final LatLng _initialPosition = const LatLng(37.77483, -122.41942); // San Francisco
 
   // Set markers
   final Set<Marker> _markers = {};
@@ -20,9 +22,9 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
     super.initState();
     _markers.add(
       Marker(
-        markerId: MarkerId('initialMarker'),
+        markerId: const MarkerId('initialMarker'),
         position: _initialPosition,
-        infoWindow: InfoWindow(
+        infoWindow: const InfoWindow(
           title: 'San Francisco',
           snippet: 'An interesting city',
         ),
@@ -34,7 +36,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Google Maps')),
+      appBar: AppBar(title: const Text('Google Maps')),
       body: GoogleMap(
         initialCameraPosition: CameraPosition(
           target: _initialPosition,
