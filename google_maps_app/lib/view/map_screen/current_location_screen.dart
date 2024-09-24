@@ -19,13 +19,50 @@ class _GoogleMapScreen2State extends State<GoogleMapScreen2> {
     super.initState();
     _markers.add(
       Marker(
-        markerId: MarkerId('initialMarker'),
+        markerId: const MarkerId('initialMarker'),
         position: _currentPosition,
-        infoWindow: InfoWindow(
+        infoWindow: const InfoWindow(
           title: 'San Francisco',
           snippet: 'An interesting city',
         ),
         icon: BitmapDescriptor.defaultMarker,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Google Maps')),
+      body: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: _currentPosition,
+              zoom: 12.0,
+            ),
+            markers: _markers,
+            onMapCreated: (GoogleMapController controller) {
+              _controller = controller;
+            },
+            mapType: MapType.normal,
+            myLocationEnabled: true,
+            compassEnabled: true,
+            zoomControlsEnabled: false,
+            onTap: (latLng){
+              print("LatLng: $latLng");
+            },
+
+          ),
+          Positioned(
+            bottom: 50,
+            right: 10,
+            child: FloatingActionButton(
+              onPressed: _getCurrentLocation,
+              child: const Icon(Icons.my_location, color: Colors.red),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -56,18 +93,22 @@ class _GoogleMapScreen2State extends State<GoogleMapScreen2> {
           'Location permissions are permanently denied, we cannot request permissions.');
     }
 
+    const LocationSettings locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 100,
+    );
+
     // Get the current location
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(locationSettings: locationSettings);
 
     setState(() {
       _currentPosition = LatLng(position.latitude, position.longitude);
 
       _markers.add(
         Marker(
-          markerId: MarkerId('currentLocationMarker'),
+          markerId: const MarkerId('currentLocationMarker'),
           position: _currentPosition,
-          infoWindow: InfoWindow(
+          infoWindow: const InfoWindow(
             title: 'Your Location',
           ),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), // Blue marker
@@ -84,38 +125,5 @@ class _GoogleMapScreen2State extends State<GoogleMapScreen2> {
         ),
       );
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Google Maps')),
-      body: Stack(
-        children: [
-          GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: _currentPosition,
-              zoom: 12.0,
-            ),
-            markers: _markers,
-            onMapCreated: (GoogleMapController controller) {
-              _controller = controller;
-            },
-            mapType: MapType.normal,
-            myLocationEnabled: true,
-            compassEnabled: true,
-            zoomControlsEnabled: false,
-          ),
-          Positioned(
-            bottom: 50,
-            right: 10,
-            child: FloatingActionButton(
-              child: Icon(Icons.my_location),
-              onPressed: _getCurrentLocation,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
