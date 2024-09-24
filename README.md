@@ -14,8 +14,6 @@ I have created a repository on GitHub containing small sample projects that demo
   - How to configure deep links for both Android and iOS platforms.
   - Efficient navigation using the `go_router` package.
   - Handling different types of deep links with context-aware navigation.
-- **Screenshot**:
-  ![Deeplinking Screenshot](https://github.com/tulasireddytulasi/sample_flutter_projects/blob/main/screenshots/deeplinking.png)
 
 ------------
 
@@ -27,8 +25,6 @@ I have created a repository on GitHub containing small sample projects that demo
   - How to implement local storage in Flutter using Hive DB.
   - CRUD operations (Create, Read, Update, Delete) in a local database.
   - Displaying a list of expenses, with the ability to add new expenses or update existing ones.
-- **Screenshot**:
-  ![Expense Tracker Screenshot](https://github.com/tulasireddytulasi/sample_flutter_projects/blob/main/screenshots/expense_tracker.png)
 
 ------------
 
@@ -40,8 +36,6 @@ I have created a repository on GitHub containing small sample projects that demo
   - How to implement lazy loading of data as the user scrolls down.
   - Optimizing the application’s performance when dealing with a large number of records.
   - Understanding best practices for handling pagination in Flutter apps.
-- **Screenshot**:
-  ![Pagination Screenshot](https://github.com/tulasireddytulasi/sample_flutter_projects/blob/main/screenshots/pagination.png)
 
 ------------
 
@@ -53,8 +47,6 @@ I have created a repository on GitHub containing small sample projects that demo
   - How to request and manage permissions for accessing local storage.
   - Using the `image_picker` package to select images.
   - Best practices for handling image storage and ensuring a smooth user experience.
-- **Screenshot**:
-
 
 ---
 
@@ -65,9 +57,6 @@ I have created a repository on GitHub containing small sample projects that demo
 - **Learnings**: 
   - Implementing custom widgets for alternating color grids.
   - Understanding layout structure and handling custom painting.
-- **Screenshot**:
-
-<img src="https://raw.githubusercontent.com/tulasireddytulasi/sample_flutter_projects/refs/heads/main/chess_board_ui/chess_board.png" alt="Wireframe" height="360">
 
 ------------
 
@@ -79,8 +68,6 @@ I have created a repository on GitHub containing small sample projects that demo
   - Displaying the current location on the map.
   - Adding markers to the map at specific locations.
   - Handling map permissions and managing map interactions.
-- **Screenshot**:
-  ![Google Map Screenshot](https://github.com/tulasireddytulasi/sample_flutter_projects/blob/main/screenshots/google_map.png)
 
 ------------
 
