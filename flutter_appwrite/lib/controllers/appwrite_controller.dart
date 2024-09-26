@@ -96,7 +96,7 @@ class AppwriteController {
   }
 
   /// Check session exists ot not
-  Future<bool> checkSession({required String otp, required String userId}) async {
+  Future<bool> checkSession() async {
     try {
       final Session session = await account.getSession(sessionId: "current");
       print("Login Success : ${session.$id}");
@@ -111,7 +111,7 @@ class AppwriteController {
   Future<bool> logout() async {
     try {
       final res = await account.deleteSession(sessionId: "current");
-      print("Logout success: $res");
+      print("Logout success: ${res.toString()}");
       return true;
     } catch (e) {
       print("Logout fail error: $e");
