@@ -17,6 +17,7 @@ class AppwriteController {
   static const String userNotExist = "user_not_exist";
 
   Client client = Client().setEndpoint(baseUrl).setProject(projectId).setSelfSigned(status: true);
+
   // For self signed certificates, only use for development
 
   late Account account;
@@ -28,9 +29,14 @@ class AppwriteController {
   }
 
   /// Save phone no to DB while creating new user account
-  Future<bool> savePhoneToDB({required String phoneNo, required String userId}) async {
+  Future<bool> savePhoneToDB({String phoneNo = "", String email = "", required String userId}) async {
     try {
-      final response = await database.createDocument(databaseId: db, collectionId: userCollection, documentId: userId, data: {"phone_no": phoneNo, "userId": userId});
+      final response = await database.createDocument(
+        databaseId: db,
+        collectionId: userCollection,
+        documentId: userId,
+        data: {"phone_no": phoneNo, "email": email, "userId": userId},
+      );
       print("SavePhoneToDB Response: $response");
       return true;
     } on AppwriteException catch (e) {
@@ -39,48 +45,91 @@ class AppwriteController {
     }
   }
 
-  /// Check whether the phone no exists in DB ot not
-  Future<String> checkPhoneNumber({required String phoneNumber}) async {
+  /// Check whether the phone no or email exists in DB ot not
+  Future<String> checkPhoneNoOrEmail({String phoneNumber = "", String email = ""}) async {
     try {
-      final DocumentList matchUser = await database.listDocuments(databaseId: db, collectionId: userCollection, queries: [Query.equal("phone_no", phoneNumber)]);
+      if (phoneNumber.isEmpty && email.isEmpty) return userNotExist;
+      List<String> queries = [];
+
+      if (phoneNumber.isNotEmpty && email.isEmpty) {
+        queries = [Query.equal("phone_no", phoneNumber)];
+      } else {
+        queries = [Query.equal("email", email)];
+      }
+
+      final DocumentList matchUser = await database.listDocuments(
+        databaseId: db,
+        collectionId: userCollection,
+        queries: queries,
+      );
 
       if (matchUser.total > 0) {
         final Document userDoc = matchUser.documents.first;
 
-        if (userDoc.data["phone_no"] != null || userDoc.data["phone_no"] != "") {
+        if ((userDoc.data["phone_no"] != null) || (userDoc.data["email"] != null)) {
           return userDoc.data["userId"];
         } else {
-          print(userNotExist);
           return userNotExist;
         }
       } else {
-        print(userNotExist);
         return userNotExist;
       }
     } on AppwriteException catch (e) {
       print("User not exist Error: $e");
-      return userNotExist;
+      throw MissingCredentialsException("User not exist Error: $e");
     }
   }
 
-  /// Create a phone session, send OTP to the phone no
-  Future<String> createPhoneSession({required String phoneNo}) async {
+  // Create a phone or email session, send OTP to the phone number or email
+  Future<String> createPhoneOrEmailSession({String phoneNo = "", String email = ""}) async {
     try {
-      final userId = await checkPhoneNumber(phoneNumber: phoneNo);
+      _validateCredentials(phoneNo, email);
 
+      String userId = await checkPhoneNoOrEmail(phoneNumber: phoneNo, email: email);
+
+      // If user doesn't exist, create a new account
       if (userId == userNotExist) {
-        /// Creates new User Account
-        final Token tokenData = await account.createPhoneToken(userId: ID.unique(), phone: phoneNo);
-        savePhoneToDB(phoneNo: phoneNo, userId: tokenData.userId);
-        return tokenData.userId;
+        return await _createNewUserAccount(phoneNo, email);
       } else {
-        final Token tokenData = await account.createPhoneToken(userId: userId, phone: phoneNo);
-        return tokenData.userId;
+        // Existing user, generate token
+        return await _generateToken(userId, phoneNo, email);
       }
     } on AppwriteException catch (e) {
-      print("Error on create phone session: $e");
-      return "login_error";
+      throw Exception("Error while creating session: ${e.message}");
     }
+  }
+
+  /// Validate if either phone number or email is provided
+  void _validateCredentials(String phoneNo, String email) {
+    if (phoneNo.isEmpty && email.isEmpty) {
+      throw MissingCredentialsException("No Phone Number or Email provided");
+    }
+  }
+
+  /// Create a new user account based on phone or email
+  Future<String> _createNewUserAccount(String phoneNo, String email) async {
+    if (phoneNo.isNotEmpty) {
+      final Token tokenData = await account.createPhoneToken(userId: ID.unique(), phone: phoneNo);
+      savePhoneToDB(phoneNo: phoneNo, userId: tokenData.userId);
+      return tokenData.userId;
+    } else if (email.isNotEmpty) {
+      final Token tokenData = await account.createEmailToken(userId: ID.unique(), email: email);
+      savePhoneToDB(email: email, userId: tokenData.userId);
+      return tokenData.userId;
+    }
+    throw MissingCredentialsException("Account creation requires either a phone number or email.");
+  }
+
+  /// Generate token for an existing user based on phone or email
+  Future<String> _generateToken(String userId, String phoneNo, String email) async {
+    if (phoneNo.isNotEmpty) {
+      final Token tokenData = await account.createPhoneToken(userId: userId, phone: phoneNo);
+      return tokenData.userId;
+    } else if (email.isNotEmpty) {
+      final Token tokenData = await account.createEmailToken(userId: userId, email: email);
+      return tokenData.userId;
+    }
+    throw MissingCredentialsException("Token generation requires either a phone number or email.");
   }
 
   /// Login with OTP
@@ -118,4 +167,13 @@ class AppwriteController {
       return false;
     }
   }
+}
+
+class MissingCredentialsException implements Exception {
+  final String message;
+
+  MissingCredentialsException(this.message);
+
+  @override
+  String toString() => message;
 }

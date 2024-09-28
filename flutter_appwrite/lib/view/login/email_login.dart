@@ -2,26 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_appwrite/controllers/appwrite_controller.dart';
 import 'package:flutter_appwrite/utils/app_validator.dart';
-import 'package:flutter_appwrite/view/login/email_login.dart';
-import 'package:flutter_appwrite/view/login/otp_screen.dart';
+import 'package:flutter_appwrite/view/Login/otp_screen.dart';
+import 'package:flutter_appwrite/view/login/login.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class EmailLoginScreen extends StatefulWidget {
+  const EmailLoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<EmailLoginScreen> createState() => _EmailLoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _EmailLoginScreenState extends State<EmailLoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController phoneNoController = TextEditingController();
-  String countryCode = "+91";
+  final TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login Screen", style: Theme.of(context).textTheme.titleLarge),
+        title: Text("Email Login Screen", style: Theme.of(context).textTheme.titleLarge),
         elevation: 4,
       ),
       body: SafeArea(
@@ -35,17 +34,20 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 100),
-                const Text("Mobile No", textAlign: TextAlign.start, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const Text(
+                  "Email",
+                  textAlign: TextAlign.start,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  controller: phoneNoController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  maxLength: 10,
+                  controller: emailController,
+                  keyboardType: TextInputType.text,
+                  maxLength: 50,
                   maxLines: 1,
-                  validator: AppValidators.validateMobileNo,
+                  validator: AppValidators.validateEmail,
                   decoration: const InputDecoration(
-                    hintText: "Enter Mobile No",
+                    hintText: "Enter your email",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       borderSide: BorderSide(color: Colors.black, width: 1),
@@ -56,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextButton(
                   onPressed: () => Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => const EmailLoginScreen()),
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
                     (route) => false,
                   ),
                   style: ButtonStyle(
@@ -66,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   child: Text(
-                    "Login with email",
+                    "Login with mobile",
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: Colors.white,
                         ),
@@ -80,30 +82,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () async {
                       try {
                         if (_formKey.currentState!.validate()) {
-                          final String no = phoneNoController.text.trim();
-                          final String num = countryCode + no;
-                          print("Number: $num");
-                          final String userId = await AppwriteController().createPhoneOrEmailSession(phoneNo: num);
+                          final String email = emailController.text.trim();
+                          print("email: $email");
+                          final String userId = await AppwriteController().createPhoneOrEmailSession(email: email);
 
                           /// DON'T use BuildContext across asynchronous gaps.
                           if (!context.mounted) return;
                           if (userId != "login_error") {
                             Navigator.push(context, MaterialPageRoute(builder: (context) => OtpScreen(userId: userId)));
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Failed to send otp"),
-                              ),
-                            );
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to send otp")));
                           }
                         }
                       } catch (e) {
-                        print("Login Error 52: $e");
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Failed to send otp: $e"),
-                          ),
-                        );
+                        print("Email Login Error 52: $e");
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -112,8 +104,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     child: const Text(
-                      "Login",
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      "Email Login",
+                      style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
