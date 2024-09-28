@@ -3,9 +3,7 @@ import 'package:flutter_appwrite/controllers/appwrite_controller.dart';
 import 'package:flutter_appwrite/view/home/home.dart';
 import 'package:flutter_appwrite/view/login/login.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -25,7 +23,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class CheckUserSessions extends StatefulWidget {
   const CheckUserSessions({super.key});
 
@@ -36,16 +33,21 @@ class CheckUserSessions extends StatefulWidget {
 class _CheckUserSessionsState extends State<CheckUserSessions> {
   @override
   void initState() {
-
     AppwriteController().setConnection();
 
     AppwriteController().checkSession().then((value) {
       if (value) {
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen()) , (
-            route) => false);
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (route) => false,
+        );
       } else {
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const LoginScreen()) , (
-            route) => false);
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false,
+        );
       }
     });
     super.initState();
