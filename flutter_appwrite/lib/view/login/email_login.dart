@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_appwrite/controllers/appwrite_controller.dart';
 import 'package:flutter_appwrite/utils/app_validator.dart';
 import 'package:flutter_appwrite/view/Login/otp_screen.dart';
