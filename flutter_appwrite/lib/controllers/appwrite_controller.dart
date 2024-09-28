@@ -16,6 +16,9 @@ class AppwriteController {
   static const String userCollection = "66f57cdf003c6a01af11";
   static const String userNotExist = "user_not_exist";
 
+  Map<String,dynamic> _userData = {};
+  Map<String,dynamic> get userData => _userData;
+
   Client client = Client().setEndpoint(baseUrl).setProject(projectId).setSelfSigned(status: true);
 
   // For self signed certificates, only use for development
@@ -66,6 +69,7 @@ class AppwriteController {
       if (matchUser.total > 0) {
         final Document userDoc = matchUser.documents.first;
         print("U Data: ${userDoc.toMap()}");
+        _userData = userDoc.data;
 
         if ((userDoc.data["phone_no"] != null) || (userDoc.data["email"] != null)) {
           return userDoc.data["userId"];

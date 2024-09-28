@@ -10,8 +10,29 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String picUrl = "";
-      //"https://moviegalleri.net/wp-content/gallery/bhagyashri-mr-bachpr/Actress-Bhagyashri-Borse-Images-122ee5c.jpg";
+
+  String profilePic = "";
+  String name = "";
+  String email = "";
+  String mobileNo = "";
+
+  List<String> data = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getUserData();
+  }
+
+  getUserData() {
+    Map<String, dynamic> userData = AppwriteController().userData;
+    print("yyyyyy: $userData");
+    profilePic = userData["profile_pic"] ?? "";
+    name = userData["name"] ?? "";
+    mobileNo = userData["phone_no"] ?? "";
+    email = userData["email"] ?? "";
+    data = [name, email, mobileNo];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,33 +55,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  picUrl.isNotEmpty
+                  profilePic.isNotEmpty
                       ? ClipOval(
                           child: Image.network(
-                            picUrl,
+                            profilePic,
                             width: 70.0,
                             height: 70.0,
                             fit: BoxFit.cover, // Ensures the image fits within the circle
                           ),
                         )
-                      : ClipOval(
+                      : Container(
+                         decoration: BoxDecoration(
+                           shape: BoxShape.circle,
+                           border: Border.all(color: Colors.blueAccent, width: 4),
+                         ),
                           child: IconButton(
                             onPressed: () {},
                             icon: const Icon(Icons.person_rounded, size: 50),
                           ),
                         ),
-                  const SizedBox(width: 10),
+                  const SizedBox(height: 10),
                   Text(
-                    "Leonidas",
+                   name.isNotEmpty ? name : "Leonidas",
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
               ...List.generate(
-                  3,
-                  (index) => const ListTile(
-                        leading: Icon(Icons.person),
-                        title: Text("Tulasi Reddy"),
+                  data.length,
+                  (index) => ListTile(
+                        leading: const Icon(Icons.person),
+                        title: Text(data[index]),
                       )),
               const SizedBox(height: 30),
               const Spacer(),
