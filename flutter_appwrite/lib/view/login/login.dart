@@ -113,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: const Text(
                       "Login",
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),

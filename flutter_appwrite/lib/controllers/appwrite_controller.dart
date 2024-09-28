@@ -65,6 +65,7 @@ class AppwriteController {
 
       if (matchUser.total > 0) {
         final Document userDoc = matchUser.documents.first;
+        print("U Data: ${userDoc.toMap()}");
 
         if ((userDoc.data["phone_no"] != null) || (userDoc.data["email"] != null)) {
           return userDoc.data["userId"];
