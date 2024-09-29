@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
+import 'package:flutter_appwrite/controllers/local_data.dart';
 
 class AppwriteController {
   static final AppwriteController _appwriteController = AppwriteController._internal();
@@ -15,9 +16,11 @@ class AppwriteController {
   static const String db = "66f57ca0001a649eaf8c";
   static const String userCollection = "66f57cdf003c6a01af11";
   static const String userNotExist = "user_not_exist";
+  static const String storageBucket = "66f80fa10004fb30e2aa";
 
-  Map<String,dynamic> _userData = {};
-  Map<String,dynamic> get userData => _userData;
+  Map<String, dynamic> _userData = {};
+
+  Map<String, dynamic> get userData => _userData;
 
   Client client = Client().setEndpoint(baseUrl).setProject(projectId).setSelfSigned(status: true);
 
@@ -25,10 +28,12 @@ class AppwriteController {
 
   late Account account;
   late Databases database;
+  late Storage storage;
 
   setConnection() {
     account = Account(client);
     database = Databases(client);
+    storage = Storage(client);
   }
 
   /// Save phone no to DB while creating new user account
@@ -45,6 +50,37 @@ class AppwriteController {
     } on AppwriteException catch (e) {
       print("Cannot Save to DB Error: $e");
       return false;
+    }
+  }
+
+  /// Save phone no to DB while creating new user account
+  Future<Document> updateUserData({
+    String profilePic = "",
+    String phoneNo = "",
+    String email = "",
+    required String userId,
+  }) async {
+    try {
+      Map<String, String> updateUserDoc = {};
+      if (profilePic.isNotEmpty) updateUserDoc.addAll({"profile_pic": profilePic});
+      if (phoneNo.isNotEmpty) updateUserDoc.addAll({"phone_no": phoneNo});
+      if (email.isNotEmpty) updateUserDoc.addAll({"email": email});
+      print("updateUserDoc: $updateUserDoc, userId: $userId");
+
+      final Document response = await database.updateDocument(
+        databaseId: db,
+        collectionId: userCollection,
+        documentId: userId,
+        data: updateUserDoc,
+      );
+
+      LocalSavedData.saveUserData(response.data);
+
+      print("SavePhoneToDB Response: $response");
+      return response;
+    } on AppwriteException catch (e) {
+      print("Cannot Update to DB Error: $e");
+      rethrow;
     }
   }
 
@@ -70,6 +106,8 @@ class AppwriteController {
         final Document userDoc = matchUser.documents.first;
         print("U Data: ${userDoc.toMap()}");
         _userData = userDoc.data;
+
+        await LocalSavedData.saveUserData(userDoc.data);
 
         if ((userDoc.data["phone_no"] != null) || (userDoc.data["email"] != null)) {
           return userDoc.data["userId"];
@@ -170,6 +208,66 @@ class AppwriteController {
     } catch (e) {
       print("Logout fail error: $e");
       return false;
+    }
+  }
+
+  String getFileLink({required String fileId}) {
+    final String fileLink = "$baseUrl/storage/buckets/$storageBucket/files/$fileId/view?project=$projectId";
+    return fileLink;
+  }
+
+  // upload and save image to storage bucket (create new image)
+  Future<String?> saveImageToBucket({required InputFile image}) async {
+    try {
+      final response = await storage.createFile(bucketId: storageBucket, fileId: ID.unique(), file: image);
+      print("the response after save to bucket $response");
+      return response.$id;
+    } catch (e) {
+      print("error on saving image to bucket :$e");
+      return null;
+    }
+  }
+
+// update an image in bucket : first delete then create new
+  Future<String?> updateImageOnBucket({required String oldImageId, required InputFile image}) async {
+    try {
+      // to delete the old image
+      await deleteImageFromBucket(oldImageId: oldImageId);
+
+      // create a new image
+      final newImage = await saveImageToBucket(image: image);
+
+      return newImage;
+    } catch (e) {
+      print("cannot update / delete image :$e");
+      return null;
+    }
+  }
+
+// to only delete the image from the storage bucket
+
+  Future<bool> deleteImageFromBucket({required String oldImageId}) async {
+    try {
+      // to delete the old image
+      await storage.deleteFile(bucketId: storageBucket, fileId: oldImageId);
+
+      return true;
+    } catch (e) {
+      print("cannot update / delete image :$e");
+      return false;
+    }
+  }
+
+// to search all the users from the database
+  Future<DocumentList?> searchUsers({required String searchItem, required String userId}) async {
+    try {
+      final DocumentList users = await database.listDocuments(databaseId: db, collectionId: userCollection, queries: [Query.search("phone_no", searchItem), Query.notEqual("userId", userId)]);
+
+      print("total match users ${users.total}");
+      return users;
+    } catch (e) {
+      print("error on search users :$e");
+      return null;
     }
   }
 }

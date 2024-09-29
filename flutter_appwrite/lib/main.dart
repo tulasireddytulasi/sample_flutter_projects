@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_appwrite/controllers/appwrite_controller.dart';
+import 'package:flutter_appwrite/controllers/local_data.dart';
 import 'package:flutter_appwrite/view/home/home.dart';
 import 'package:flutter_appwrite/view/login/login.dart';
 
@@ -34,6 +35,7 @@ class _CheckUserSessionsState extends State<CheckUserSessions> {
   @override
   void initState() {
     AppwriteController().setConnection();
+    LocalSavedData.init();
 
     AppwriteController().checkSession().then((value) {
       if (value) {

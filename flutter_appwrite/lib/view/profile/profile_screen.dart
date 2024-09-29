@@ -1,6 +1,11 @@
+import 'dart:io';
+import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_appwrite/controllers/appwrite_controller.dart';
+import 'package:flutter_appwrite/controllers/local_data.dart';
+import 'package:flutter_appwrite/model/user_model.dart';
 import 'package:flutter_appwrite/view/login/login.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -10,11 +15,12 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-
+  String userId = "";
   String profilePic = "";
-  String name = "";
-  String email = "";
-  String mobileNo = "";
+  String profilePicId = "";
+  String name = "N/A";
+  String email = "N/A";
+  String mobileNo = "N/A";
 
   List<String> data = [];
 
@@ -24,14 +30,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
     getUserData();
   }
 
-  getUserData() {
-    Map<String, dynamic> userData = AppwriteController().userData;
-    print("yyyyyy: $userData");
-    profilePic = userData["profile_pic"] ?? "";
-    name = userData["name"] ?? "";
-    mobileNo = userData["phone_no"] ?? "";
-    email = userData["email"] ?? "";
-    data = [name, email, mobileNo];
+  String filePic = "";
+
+  getImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (image != null) {
+      filePic = image.path;
+      await updateProfilePic(image: image);
+    }
+    setState(() {});
+  }
+
+  Future<void> updateProfilePic({required XFile image}) async {
+    try {
+      final fileByes = await File(filePic).readAsBytes();
+      final inputFile = InputFile.fromBytes(bytes: fileByes, filename: image.name);
+      String fileId = "";
+
+      // if image already exist for the user profile or not
+      if (profilePicId.isNotEmpty) {
+        // then update the image
+        fileId = await AppwriteController().updateImageOnBucket(image: inputFile, oldImageId: profilePicId) ?? "";
+      } else {
+        fileId = await AppwriteController().saveImageToBucket(image: inputFile) ?? "";
+      }
+      await AppwriteController().updateUserData(userId: userId, profilePic: fileId);
+      await getUserData();
+    } catch (e) {
+      print("Update profile Pic error: $e");
+    }
+  }
+
+  getUserData() async {
+    String userData = await LocalSavedData.getUserData();
+    final userModel = userModelFromJson(userData.toString());
+    userId = userModel.userId.toString();
+    profilePicId = userModel.profilePic.toString();
+    profilePic = AppwriteController().getFileLink(fileId: profilePicId);
+    data = [userModel.name.toString(), userModel.email.toString(), userModel.phoneNo.toString()];
+    setState(() {});
   }
 
   @override
@@ -55,28 +95,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  profilePic.isNotEmpty
+                  profilePicId.isNotEmpty
                       ? ClipOval(
                           child: Image.network(
                             profilePic,
                             width: 70.0,
                             height: 70.0,
-                            fit: BoxFit.cover, // Ensures the image fits within the circle
+                            fit: BoxFit.cover,
                           ),
                         )
-                      : Container(
-                         decoration: BoxDecoration(
-                           shape: BoxShape.circle,
-                           border: Border.all(color: Colors.blueAccent, width: 4),
-                         ),
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.person_rounded, size: 50),
-                          ),
-                        ),
+                      : filePic.isNotEmpty
+                          ? ClipOval(
+                              child: Image.file(
+                                width: 70,
+                                height: 70,
+                                fit: BoxFit.cover,
+                                File(filePic),
+                                errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                  return const Center(child: Text('This image type is not supported'));
+                                },
+                              ),
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.blueAccent, width: 4),
+                              ),
+                              child: IconButton(
+                                onPressed: getImage,
+                                icon: const Icon(Icons.person_rounded, size: 50),
+                              ),
+                            ),
                   const SizedBox(height: 10),
                   Text(
-                   name.isNotEmpty ? name : "Leonidas",
+                    name.isNotEmpty ? name : "Leonidas",
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],

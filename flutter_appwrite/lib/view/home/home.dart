@@ -17,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text("Dashboard", style: Theme.of(context).textTheme.titleLarge),
         elevation: 4,
+        leading: IconButton(onPressed: () {  }, icon: const Icon(Icons.home)),
         actions: [
           IconButton(onPressed: (){
             Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
