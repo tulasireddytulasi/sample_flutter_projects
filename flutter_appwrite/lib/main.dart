@@ -34,6 +34,7 @@ class CheckUserSessions extends StatefulWidget {
 class _CheckUserSessionsState extends State<CheckUserSessions> {
   @override
   void initState() {
+    super.initState();
     AppwriteController().setConnection();
     LocalSavedData.init();
 
@@ -52,7 +53,6 @@ class _CheckUserSessionsState extends State<CheckUserSessions> {
         );
       }
     });
-    super.initState();
   }
 
   @override
