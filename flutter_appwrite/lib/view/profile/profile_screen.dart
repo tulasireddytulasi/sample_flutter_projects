@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_appwrite/controllers/appwrite_controller.dart';
 import 'package:flutter_appwrite/controllers/local_data.dart';
 import 'package:flutter_appwrite/model/user_model.dart';
+import 'package:flutter_appwrite/provider/auth_provider.dart';
 import 'package:flutter_appwrite/view/login/login.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -23,10 +25,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String mobileNo = "N/A";
 
   List<String> data = [];
+  late AuthProvider authProvider;
 
   @override
   void initState() {
     super.initState();
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
     getUserData();
   }
 
@@ -66,6 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   getUserData() async {
     String userData = await LocalSavedData.getUserData();
+    if(userData.isEmpty) return;
     final userModel = userModelFromJson(userData.toString());
     userId = userModel.userId.toString();
     profilePicId = userModel.profilePic.toString();
@@ -154,9 +159,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   height: 70,
                   child: ElevatedButton(
                     onPressed: () async {
-                      final bool logoutSuccess = await AppwriteController().logout();
+                      final logoutResponse = await authProvider.logout();
                       if (!context.mounted) return;
-                      if (logoutSuccess) {
+                      if (logoutResponse.isSuccess) {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => const LoginScreen()),

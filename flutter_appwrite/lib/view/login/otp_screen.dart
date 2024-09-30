@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_appwrite/controllers/appwrite_controller.dart';
+import 'package:flutter_appwrite/provider/auth_provider.dart';
 import 'package:flutter_appwrite/view/home/home.dart';
+import 'package:provider/provider.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key, required this.userId});
+
   final String userId;
 
   @override
@@ -15,23 +17,38 @@ class _OtpScreenState extends State<OtpScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController otpController = TextEditingController();
 
+  late AuthProvider authProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
+  }
+
   void otpLogin() async {
     try {
       if (_formKey.currentState!.validate()) {
         final String otp = otpController.text.trim();
-        print("otp Number: $otp, id: ${widget.userId}");
+        final loginSuccess = await authProvider.loginWithOTP(otp: otp, userId: widget.userId);
 
-        final bool loginSuccess = await AppwriteController().loginWithOTP(otp: otp, userId: widget.userId);
-        if(loginSuccess){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen(),));
+        if (loginSuccess.isSuccess) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false,
+          );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to login with otp")));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Failed to login with otp"),
+            ),
+          );
         }
       } else {
         print("Please enter OTP");
       }
     } catch (e) {
-      print("OTP Error 52: $e");
+      print("OTP Error: $e");
     }
   }
 

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_appwrite/controllers/appwrite_controller.dart';
+import 'package:flutter_appwrite/provider/auth_provider.dart';
 import 'package:flutter_appwrite/utils/app_validator.dart';
 import 'package:flutter_appwrite/view/login/email_login.dart';
 import 'package:flutter_appwrite/view/login/otp_screen.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +17,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController phoneNoController = TextEditingController();
   String countryCode = "+91";
+  late AuthProvider authProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +44,14 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 100),
-                const Text("Mobile No", textAlign: TextAlign.start, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const Text(
+                  "Mobile No",
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: phoneNoController,
@@ -82,13 +98,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (_formKey.currentState!.validate()) {
                           final String no = phoneNoController.text.trim();
                           final String num = countryCode + no;
-                          print("Number: $num");
-                          final String userId = await AppwriteController().createPhoneOrEmailSession(phoneNo: num);
 
+                          final otpResponse = await authProvider.sendOTP(phoneNo: num);
                           /// DON'T use BuildContext across asynchronous gaps.
                           if (!context.mounted) return;
-                          if (userId != "login_error") {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => OtpScreen(userId: userId)));
+                          if (otpResponse.isSuccess) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => OtpScreen(userId: otpResponse.success!.userId),
+                              ),
+                            );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -98,7 +118,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                         }
                       } catch (e) {
-                        print("Login Error 52: $e");
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text("Failed to send otp: $e"),

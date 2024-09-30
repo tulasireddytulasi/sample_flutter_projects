@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_appwrite/controllers/appwrite_controller.dart';
+import 'package:flutter_appwrite/provider/auth_provider.dart';
 import 'package:flutter_appwrite/utils/app_validator.dart';
 import 'package:flutter_appwrite/view/Login/otp_screen.dart';
 import 'package:flutter_appwrite/view/login/login.dart';
+import 'package:provider/provider.dart';
 
 class EmailLoginScreen extends StatefulWidget {
   const EmailLoginScreen({super.key});
@@ -14,6 +15,13 @@ class EmailLoginScreen extends StatefulWidget {
 class _EmailLoginScreenState extends State<EmailLoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
+  late AuthProvider authProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,19 +90,28 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                       try {
                         if (_formKey.currentState!.validate()) {
                           final String email = emailController.text.trim();
-                          print("email: $email");
-                          final String userId = await AppwriteController().createPhoneOrEmailSession(email: email);
+
+                          final otpResponse = await authProvider.sendOTP(email: email);
 
                           /// DON'T use BuildContext across asynchronous gaps.
                           if (!context.mounted) return;
-                          if (userId != "login_error") {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => OtpScreen(userId: userId)));
+                          if (otpResponse.isSuccess) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => OtpScreen(userId: otpResponse.success!.userId),
+                              ),
+                            );
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to send otp")));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Failed to send otp"),
+                              ),
+                            );
                           }
                         }
                       } catch (e) {
-                        print("Email Login Error 52: $e");
+                        print("Email Login Error: $e");
                       }
                     },
                     style: ElevatedButton.styleFrom(
