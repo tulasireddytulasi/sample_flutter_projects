@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_appwrite/controllers/appwrite_controller.dart';
-import 'package:flutter_appwrite/view/login/login.dart';
 import 'package:flutter_appwrite/view/profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,11 +15,13 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text("Dashboard", style: Theme.of(context).textTheme.titleLarge),
         elevation: 4,
-        leading: IconButton(onPressed: () {  }, icon: const Icon(Icons.home)),
+        leading: IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
         actions: [
-          IconButton(onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
-          }, icon: const Icon(Icons.person))
+          IconButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+              },
+              icon: const Icon(Icons.person))
         ],
       ),
       body: const SafeArea(

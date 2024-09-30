@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_appwrite/controllers/local_data.dart';
 import 'package:flutter_appwrite/provider/auth_provider.dart';
+import 'package:flutter_appwrite/provider/profile_provider.dart';
 import 'package:flutter_appwrite/view/home/home.dart';
 import 'package:flutter_appwrite/view/login/login.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -47,7 +48,9 @@ class _CheckUserSessionsState extends State<CheckUserSessions> {
 
   Future<void> checkSession() async {
     final AuthProvider authProvider = Provider.of<AuthProvider>(context, listen: false);
-    authProvider.init();
+    final ProfileProvider profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    await authProvider.init();
+    profileProvider.init();
     LocalSavedData.init();
 
     authProvider.checkSession().then(

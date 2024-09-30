@@ -8,6 +8,21 @@ class UserService {
 
   UserService(this.client);
 
+  /// Get Single Document
+  Future<Result<Document, String>> getDocument({required String documentId}) async {
+    try {
+      Databases database = Databases(client);
+      final Document document = await database.getDocument(
+        databaseId: AppwriteConfig.db,
+        collectionId: AppwriteConfig.userCollection,
+       documentId: documentId
+      );
+      return Result(success: document);
+    } catch (e) {
+      return Result(error: "Unable to fetch document. Error: $e");
+    }
+  }
+
   /// Get Documents List
   Future<Result<DocumentList, String>> getDocumentsList({List<String>? queries}) async {
     try {

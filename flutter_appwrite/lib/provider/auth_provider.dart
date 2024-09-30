@@ -6,16 +6,19 @@ import 'package:flutter_appwrite/services/auth_service.dart';
 import 'package:flutter_appwrite/services/user_service.dart';
 import 'package:flutter_appwrite/utils/app_exceptions.dart';
 import 'package:flutter_appwrite/utils/app_extensions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider extends ChangeNotifier {
   final client = AppwriteClient().client;
   late AuthService authService;
   late UserService userService;
+  late SharedPreferences sharedPreferences;
 
   /// Initialize
   Future<void> init() async {
     authService = AuthService(client);
     userService = UserService(client);
+    sharedPreferences = await SharedPreferences.getInstance();
   }
 
   Future<Result<bool, bool>> checkSession() async {
@@ -66,11 +69,15 @@ class AuthProvider extends ChangeNotifier {
           phoneNo: phoneNo ?? "",
           userId: userId.isNullOrEmpty ? ID.unique() : userId,
         );
+        sharedPreferences.setString("userId", userId);
       } else {
         tokenResponse = await authService.createPhoneOrEmailToken(userId: ID.unique(), email: email ?? "", phoneNo: phoneNo ?? "");
         Map<String, dynamic> data = {"phone_no": phoneNo, "email": email, "userId": tokenResponse.success!.userId};
         final resultDoc = await userService.createDocument(userId: tokenResponse.success!.userId, data: data);
-        if (resultDoc.isSuccess) userDocument = resultDoc.success!;
+        if (resultDoc.isSuccess) {
+          userDocument = resultDoc.success!;
+          sharedPreferences.setString("userId", userDocument.$id);
+        };
       }
 
       // Todo: Save data in Local DB
