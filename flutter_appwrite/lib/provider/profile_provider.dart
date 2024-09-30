@@ -39,7 +39,7 @@ class ProfileProvider extends ChangeNotifier {
 
   Future<Result<bool, bool>> getUserDetails({required String documentId}) async {
     try {
-      final userDocument = await userService.getDocument(documentId: documentId); // "66fa8d2f3604bee19948"
+      final userDocument = await userService.getDocument(documentId: documentId);
 
       if (userDocument.isSuccess) {
         userModel = userModelFromJson(json.encode(userDocument.success?.data));
