@@ -16,7 +16,6 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController otpController = TextEditingController();
-
   late AuthProvider authProvider;
 
   @override
@@ -32,12 +31,14 @@ class _OtpScreenState extends State<OtpScreen> {
         final loginSuccess = await authProvider.loginWithOTP(otp: otp, userId: widget.userId);
 
         if (loginSuccess.isSuccess) {
+          if (!mounted) return;
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const HomeScreen()),
             (route) => false,
           );
         } else {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("Failed to login with otp"),
