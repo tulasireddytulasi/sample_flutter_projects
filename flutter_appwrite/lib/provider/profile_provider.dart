@@ -33,16 +33,20 @@ class ProfileProvider extends ChangeNotifier {
   String name = "N/A";
   String email = "N/A";
   String mobileNo = "N/A";
+  bool isLoading = false;
 
   List<String> data = [];
   String filePic = "";
 
   Future<Result<bool, String>> getUserDetails({required String documentId}) async {
     try {
+      isLoading = true;
+      notifyListeners();
       final userDocument = await userService.getDocument(documentId: documentId);
 
       if (userDocument.isSuccess) {
         userModel = userModelFromJson(json.encode(userDocument.success?.data));
+        isLoading = false;
         setUserData();
         return Result(success: true, successMessage: "Successfully fetched document");
       } else {
@@ -55,7 +59,7 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
-  Future<Result<bool, String>> updateProfilePic({required String userId, required String fileId}) async {
+  Future<Result<String, String>> updateProfilePic({required String userId, required String fileId}) async {
     try {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
@@ -67,6 +71,9 @@ class ProfileProvider extends ChangeNotifier {
       final inputFile = InputFile.fromBytes(bytes: fileByes, filename: image.name);
       fileModel.File file;
       String finalFileId = "";
+
+      isLoading = true;
+      notifyListeners();
 
       // if image already exist for the user profile or not
       if (fileId.isNotEmpty) {
@@ -86,9 +93,11 @@ class ProfileProvider extends ChangeNotifier {
 
       userModel = userModelFromJson(json.encode(document.success?.data));
       setUserData();
+      isLoading = false;
       notifyListeners();
-      return Result(success: true);
+      return Result(success: profilePic);
     } catch (e, s) {
+      isLoading = false;
       return Result(error: "Unable to update profile Pic. Error: $e", errorMessage: "Error Stack: $s");
     }
   }
@@ -96,7 +105,7 @@ class ProfileProvider extends ChangeNotifier {
   void setUserData() async {
     userId = userModel.userId.toString();
     profilePicId = userModel.profilePic.toString();
-    profilePic = getFileLink(fileId: profilePicId);
+    profilePic = profilePicId.isNotEmpty ? getFileLink(fileId: profilePicId) : "";
     data = [userModel.name.toString(), userModel.email.toString(), userModel.phoneNo.toString()];
     notifyListeners();
   }

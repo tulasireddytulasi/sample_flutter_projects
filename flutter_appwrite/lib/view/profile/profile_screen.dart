@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_appwrite/provider/auth_provider.dart';
 import 'package:flutter_appwrite/provider/profile_provider.dart';
 import 'package:flutter_appwrite/view/login/login.dart';
+import 'package:flutter_appwrite/view/profile/widget/profile_pic_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -60,43 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    profileProvider.profilePicId.isNotEmpty
-                        ? InkWell(
-                            onTap: updateProfilePic,
-                            child: ClipOval(
-                              child: Image.network(
-                                profileProvider.profilePic,
-                                width: 70.0,
-                                height: 70.0,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          )
-                        : profileProvider.filePic.isNotEmpty
-                            ? InkWell(
-                                onTap: updateProfilePic,
-                                child: ClipOval(
-                                  child: Image.file(
-                                    width: 70,
-                                    height: 70,
-                                    fit: BoxFit.cover,
-                                    File(profileProvider.filePic),
-                                    errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                                      return const Center(child: Text('This image type is not supported'));
-                                    },
-                                  ),
-                                ),
-                              )
-                            : Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.blueAccent, width: 4),
-                                ),
-                                child: IconButton(
-                                  onPressed: updateProfilePic,
-                                  icon: const Icon(Icons.person_rounded, size: 50),
-                                ),
-                              ),
+                    const ProfilePicWidget(),
                     const SizedBox(height: 10),
                     Text(
                       profileProvider.name.isNotEmpty ? profileProvider.name : "Leonidas",
