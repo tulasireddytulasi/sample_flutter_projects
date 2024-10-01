@@ -72,7 +72,7 @@ class ProfileProvider extends ChangeNotifier {
       if (fileId.isNotEmpty) {
         // then update the image
         file = await storageService.uploadFileToBucket(image: inputFile);
-        final bool isDeleted = await storageService.deleteImageFromBucket(oldImageId: fileId);
+        final bool isDeleted = await storageService.deleteImageFromBucket(imageId: fileId);
         finalFileId = file.$id;
       } else {
         file = await storageService.uploadFileToBucket(image: inputFile);

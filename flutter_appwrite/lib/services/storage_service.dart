@@ -22,10 +22,10 @@ class StorageService {
     }
   }
 
-  Future<bool> deleteImageFromBucket({required String oldImageId}) async {
+  Future<bool> deleteImageFromBucket({required String imageId}) async {
     Storage storage = Storage(client);
     try {
-      await storage.deleteFile(bucketId: AppwriteConfig.storageBucket, fileId: oldImageId);
+      await storage.deleteFile(bucketId: AppwriteConfig.storageBucket, fileId: imageId);
       return true;
     } catch (e) {
      rethrow;
