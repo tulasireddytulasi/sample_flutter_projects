@@ -55,11 +55,11 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
-  Future<Result<bool, bool>> updateProfilePic({required String userId, required String fileId}) async {
+  Future<Result<bool, String>> updateProfilePic({required String userId, required String fileId}) async {
     try {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-      if (image == null) return Result(error: false, errorMessage: "Unable to get pic from gallery");
+      if (image == null) return Result(error: "Unable to get pic from gallery");
 
       filePic = image.path;
 
@@ -84,13 +84,12 @@ class ProfileProvider extends ChangeNotifier {
         data: {"profile_pic": finalFileId},
       );
 
-      userModel = userModelFromJson(json.encode(document.success!));
+      userModel = userModelFromJson(json.encode(document.success?.data));
       setUserData();
       notifyListeners();
       return Result(success: true);
-    } catch (e) {
-      print("Update profile Pic error: $e");
-      return Result(error: false, errorMessage: "Unable to update profile Pic. Error: $e");
+    } catch (e, s) {
+      return Result(error: "Unable to update profile Pic. Error: $e", errorMessage: "Error Stack: $s");
     }
   }
 
