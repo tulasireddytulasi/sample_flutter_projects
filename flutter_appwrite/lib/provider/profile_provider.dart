@@ -48,6 +48,7 @@ class ProfileProvider extends ChangeNotifier {
         userModel = userModelFromJson(json.encode(userDocument.success?.data));
         isLoading = false;
         setUserData();
+        notifyListeners();
         return Result(success: true, successMessage: "Successfully fetched document");
       } else {
         return Result(error: userDocument.error, errorMessage: userDocument.errorMessage);
@@ -107,7 +108,6 @@ class ProfileProvider extends ChangeNotifier {
     profilePicId = userModel.profilePic.toString();
     profilePic = profilePicId.isNotEmpty ? getFileLink(fileId: profilePicId) : "";
     data = [userModel.name.toString(), userModel.email.toString(), userModel.phoneNo.toString()];
-    notifyListeners();
   }
 
   String getFileLink({required String fileId}) {
