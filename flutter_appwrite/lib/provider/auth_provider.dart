@@ -26,7 +26,7 @@ class AuthProvider extends ChangeNotifier {
     if (res.isSuccess) {
       return Result(success: res.isSuccess);
     } else {
-      return Result(error: false);
+      return Result(error: true);
     }
   }
 
@@ -35,14 +35,14 @@ class AuthProvider extends ChangeNotifier {
     if (res.isSuccess) {
       return Result(success: res.isSuccess);
     } else {
-      return Result(error: false);
+      return Result(error: true);
     }
   }
 
-  Future<Result<Token, bool>> sendOTP({String? phoneNo, String? email}) async {
+  Future<Result<Token, String>> sendOTP({String? phoneNo, String? email}) async {
     try {
       if (phoneNo.isNullOrEmpty && email.isNullOrEmpty) {
-        return Result(error: false, errorMessage: "No Phone Number or Email provided");
+        return Result(error: "No Phone Number or Email provided");
       }
 
       List<String> queries = [];
@@ -56,7 +56,7 @@ class AuthProvider extends ChangeNotifier {
       final usersList = await userService.getDocumentsList(queries: queries);
 
       if (!usersList.isSuccess) {
-        return Result(error: false, errorMessage: usersList.error);
+        return Result(error: usersList.error, errorMessage: usersList.errorMessage);
       }
 
       Result<Token, String> tokenResponse;
@@ -85,10 +85,10 @@ class AuthProvider extends ChangeNotifier {
       if (tokenResponse.isSuccess) {
         return Result(success: tokenResponse.success, successMessage: "OTP send successfully");
       } else {
-        return Result(error: false, errorMessage: tokenResponse.error);
+        return Result(error: tokenResponse.error, errorMessage: tokenResponse.errorMessage);
       }
-    } catch (g, e) {
-      return Result(error: false, errorMessage: "Unknown error of send otp: $e");
+    } catch (e, s) {
+      return Result(error: "sendOTP(): Error: $e", errorMessage: "Error Stack: $s");
     }
   }
 

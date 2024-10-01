@@ -9,14 +9,14 @@ class AuthService {
   AuthService(this.client);
 
   /// Check session exists or not
-  Future<Result<Session, bool>> checkSession() async {
+  Future<Result<Session, String>> checkSession() async {
     Account account = Account(client);
     try {
       final Session session = await account.getSession(sessionId: "current");
       print("session: ${session}");
       return Result(success: session);
     } catch (e) {
-      return Result(error: false);
+      return Result(error: "checkSession(): Error: $e");
     }
   }
 
@@ -32,13 +32,13 @@ class AuthService {
   }
 
   /// Login with OTP
-  Future<Result<Session, bool>> loginWithOTP({required String otp, required String userId}) async {
+  Future<Result<Session, String>> loginWithOTP({required String otp, required String userId}) async {
     Account account = Account(client);
     try {
       final Session session = await account.updatePhoneSession(userId: userId, secret: otp);
       return Result(success: session);
     } catch (e) {
-      return Result(error: false);
+      return Result(error: "loginWithOTP(): Error: $e");
     }
   }
 

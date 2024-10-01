@@ -37,7 +37,7 @@ class ProfileProvider extends ChangeNotifier {
   List<String> data = [];
   String filePic = "";
 
-  Future<Result<bool, bool>> getUserDetails({required String documentId}) async {
+  Future<Result<bool, String>> getUserDetails({required String documentId}) async {
     try {
       final userDocument = await userService.getDocument(documentId: documentId);
 
@@ -46,12 +46,12 @@ class ProfileProvider extends ChangeNotifier {
         setUserData();
         return Result(success: true, successMessage: "Successfully fetched document");
       } else {
-        return Result(error: false, errorMessage: userDocument.error);
+        return Result(error: userDocument.error, errorMessage: userDocument.errorMessage);
       }
     } catch (e, s) {
       print("getUserDetails Error: $e");
       print("getUserDetails Error Stack: $s");
-      return Result(error: false, errorMessage: "Error in fetching doc: $e");
+      return Result(error: "getUserDetails(): Error: $e", errorMessage: "Error stack: $s");
     }
   }
 
