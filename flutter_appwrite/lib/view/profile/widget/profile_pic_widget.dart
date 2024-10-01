@@ -52,6 +52,10 @@ class _ProfilePicWidgetState extends State<ProfilePicWidget> {
                 width: 70.0,
                 height: 70.0,
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Text(
+                  "Error: $error",
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ),
             ),
           );
