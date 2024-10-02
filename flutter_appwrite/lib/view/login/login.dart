@@ -4,6 +4,7 @@ import 'package:flutter_appwrite/provider/auth_provider.dart';
 import 'package:flutter_appwrite/utils/app_validator.dart';
 import 'package:flutter_appwrite/view/login/email_login.dart';
 import 'package:flutter_appwrite/view/login/otp_screen.dart';
+import 'package:flutter_appwrite/view/widget/primary_button.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -18,13 +19,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController phoneNoController = TextEditingController();
   String countryCode = "+91";
   late AuthProvider authProvider;
+  late ValueNotifier<bool> _isLoading;
 
   @override
   void initState() {
     super.initState();
     authProvider = Provider.of<AuthProvider>(context, listen: false);
+    _isLoading = ValueNotifier<bool>(false);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -83,56 +85,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: Text(
                     "Login with email",
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           color: Colors.white,
                         ),
                   ),
                 ),
                 const Spacer(),
-                SizedBox(
-                  width: double.infinity,
-                  height: 70,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        if (_formKey.currentState!.validate()) {
-                          final String no = phoneNoController.text.trim();
-                          final String num = countryCode + no;
-
-                          final otpResponse = await authProvider.sendOTP(phoneNo: num);
-                          /// DON'T use BuildContext across asynchronous gaps.
-                          if (!context.mounted) return;
-                          if (otpResponse.isSuccess) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => OtpScreen(userId: otpResponse.success!.userId),
-                              ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Failed to send otp"),
-                              ),
-                            );
-                          }
-                        }
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Failed to send otp: $e"),
-                          ),
+                Center(
+                  child: SizedBox(
+                    width: 240,
+                    height: 60,
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: _isLoading,
+                      builder: (context, hasConsent, child) {
+                        return PrimaryButton(
+                          title: "Login",
+                          isLoading: _isLoading.value,
+                          onPressed: login,
                         );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      backgroundColor: Colors.blueAccent,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: const Text(
-                      "Login",
-                      style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
+                      },
                     ),
                   ),
                 ),
@@ -143,5 +114,44 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> login() async {
+    try {
+      if (_formKey.currentState!.validate()) {
+        if(_isLoading.value) return;
+        _isLoading.value = true;
+        final String no = phoneNoController.text.trim();
+        final String num = countryCode + no;
+
+        final otpResponse = await authProvider.sendOTP(phoneNo: num);
+
+        /// DON'T use BuildContext across asynchronous gaps.
+        if (!mounted) return;
+        if (otpResponse.isSuccess) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OtpScreen(userId: otpResponse.success!.userId),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Failed to send otp"),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to send otp: $e"),
+        ),
+      );
+    } finally {
+      _isLoading.value = false;
+    }
   }
 }

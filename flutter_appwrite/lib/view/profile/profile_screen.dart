@@ -88,25 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: PrimaryButton(
                         title: "Logout",
                         isLoading: isLoading,
-                        onPressed: () async {
-                          profileProvider.setIsLoading = true;
-                          final logoutResponse = await authProvider.logout();
-                          profileProvider.setIsLoading = false;
-                          if (!context.mounted) return;
-                          if (logoutResponse.isSuccess) {
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(builder: (context) => const LoginScreen()),
-                                  (route) => false,
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Failed to login with otp"),
-                              ),
-                            );
-                          }
-                        },
+                        onPressed: logout,
                       ),
                     );
                   }
@@ -118,5 +100,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> logout() async {
+    profileProvider.setIsLoading = true;
+    final logoutResponse = await authProvider.logout();
+    profileProvider.setIsLoading = false;
+    if (!context.mounted) return;
+    if (logoutResponse.isSuccess) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+            (route) => false,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Failed to login with otp"),
+        ),
+      );
+    }
   }
 }

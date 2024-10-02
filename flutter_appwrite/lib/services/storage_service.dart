@@ -15,6 +15,7 @@ class StorageService {
         bucketId: AppwriteConfig.storageBucket,
         fileId: ID.unique(),
         file: image,
+        onProgress: (r){}
       );
       return response;
     } catch (e) {
