@@ -24,6 +24,7 @@ class _UploadFileState extends State<UploadFile> {
 
   @override
   Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text("Upload File Screen", style: Theme.of(context).textTheme.titleMedium),
@@ -65,7 +66,7 @@ class _UploadFileState extends State<UploadFile> {
                     ...List.generate(
                       filePathsList.length,
                       (index) {
-                        return FileCard(filePath: filePathsList[index]);
+                        return FileCard(width: width/1.1, filePath: filePathsList[index]);
                       },
                     ),
                   ],

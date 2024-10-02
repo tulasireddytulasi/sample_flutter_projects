@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class FileCard extends StatefulWidget {
-  const FileCard({super.key, required this.filePath});
+  const FileCard({super.key, required this.filePath, required this.width});
 
   final String filePath;
+  final double width;
 
   @override
   State<FileCard> createState() => _FileCardState();
@@ -53,8 +54,9 @@ class _FileCardState extends State<FileCard> {
       child: GestureDetector(
         onTap: onClick,
         child: Container(
-          width: 300,
+          width: widget.width,
           height: 80,
+          constraints: const BoxConstraints(maxWidth: 600),
           alignment: Alignment.center,
           margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           decoration: BoxDecoration(
