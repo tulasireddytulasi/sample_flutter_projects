@@ -3,6 +3,7 @@ import 'package:flutter_appwrite/provider/auth_provider.dart';
 import 'package:flutter_appwrite/utils/app_validator.dart';
 import 'package:flutter_appwrite/view/Login/otp_screen.dart';
 import 'package:flutter_appwrite/view/login/login.dart';
+import 'package:flutter_appwrite/view/widget/primary_button.dart';
 import 'package:provider/provider.dart';
 
 class EmailLoginScreen extends StatefulWidget {
@@ -16,11 +17,13 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   late AuthProvider authProvider;
+  late ValueNotifier<bool> _isLoading;
 
   @override
   void initState() {
     super.initState();
     authProvider = Provider.of<AuthProvider>(context, listen: false);
+    _isLoading = ValueNotifier<bool>(false);
   }
 
   @override
@@ -76,52 +79,23 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                   ),
                   child: Text(
                     "Login with mobile",
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.white,
-                        ),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white),
                   ),
                 ),
                 const Spacer(),
-                SizedBox(
-                  width: double.infinity,
-                  height: 70,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        if (_formKey.currentState!.validate()) {
-                          final String email = emailController.text.trim();
-
-                          final otpResponse = await authProvider.sendOTP(email: email);
-
-                          /// DON'T use BuildContext across asynchronous gaps.
-                          if (!context.mounted) return;
-                          if (otpResponse.isSuccess) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => OtpScreen(userId: otpResponse.success!.userId),
-                              ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Failed to send otp"),
-                              ),
-                            );
-                          }
-                        }
-                      } catch (e) {
-                        print("Email Login Error: $e");
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      backgroundColor: Colors.blueAccent,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: const Text(
-                      "Email Login",
-                      style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
+                Center(
+                  child: SizedBox(
+                    width: 240,
+                    height: 60,
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: _isLoading,
+                      builder: (context, hasConsent, child) {
+                        return PrimaryButton(
+                          title: "Email Login",
+                          isLoading: _isLoading.value,
+                          onPressed: emailLogin,
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -132,5 +106,37 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> emailLogin() async {
+    try {
+      if (_formKey.currentState!.validate()) {
+        if (_isLoading.value) return;
+        _isLoading.value = true;
+        final String email = emailController.text.trim();
+        final otpResponse = await authProvider.sendOTP(email: email);
+
+        /// DON'T use BuildContext across asynchronous gaps.
+        if (!context.mounted) return;
+        if (otpResponse.isSuccess) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OtpScreen(userId: otpResponse.success!.userId),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Failed to send otp"),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print("Email Login Error: $e");
+    } finally {
+      _isLoading.value = false;
+    }
   }
 }

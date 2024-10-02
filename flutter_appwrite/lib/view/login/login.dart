@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         return PrimaryButton(
                           title: "Login",
                           isLoading: _isLoading.value,
-                          onPressed: login,
+                          onPressed: mobileLogin,
                         );
                       },
                     ),
@@ -116,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> login() async {
+  Future<void> mobileLogin() async {
     try {
       if (_formKey.currentState!.validate()) {
         if(_isLoading.value) return;
