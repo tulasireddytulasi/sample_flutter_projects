@@ -97,10 +97,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 60,
                     child: ValueListenableBuilder<bool>(
                       valueListenable: _isLoading,
-                      builder: (context, hasConsent, child) {
+                      builder: (context, isLoading, child) {
                         return PrimaryButton(
                           title: "Login",
-                          isLoading: _isLoading.value,
+                          isLoading: isLoading,
                           onPressed: mobileLogin,
                         );
                       },

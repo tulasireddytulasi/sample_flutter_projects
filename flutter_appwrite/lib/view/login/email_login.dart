@@ -89,10 +89,10 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                     height: 60,
                     child: ValueListenableBuilder<bool>(
                       valueListenable: _isLoading,
-                      builder: (context, hasConsent, child) {
+                      builder: (context, isLoading, child) {
                         return PrimaryButton(
                           title: "Email Login",
-                          isLoading: _isLoading.value,
+                          isLoading: isLoading,
                           onPressed: emailLogin,
                         );
                       },

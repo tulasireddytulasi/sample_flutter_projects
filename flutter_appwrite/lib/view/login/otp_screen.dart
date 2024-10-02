@@ -30,6 +30,8 @@ class _OtpScreenState extends State<OtpScreen> {
   Future<void> otpLogin() async {
     try {
       if (_formKey.currentState!.validate()) {
+        if (_isLoading.value) return;
+        _isLoading.value = true;
         final String otp = otpController.text.trim();
         final loginSuccess = await authProvider.loginWithOTP(otp: otp, userId: widget.userId);
 
@@ -101,10 +103,10 @@ class _OtpScreenState extends State<OtpScreen> {
                     height: 60,
                     child: ValueListenableBuilder<bool>(
                       valueListenable: _isLoading,
-                      builder: (context, hasConsent, child) {
+                      builder: (context, isLoading, child) {
                         return PrimaryButton(
                           title: "Login with OTP",
-                          isLoading: _isLoading.value,
+                          isLoading: isLoading,
                           onPressed: otpLogin,
                         );
                       },

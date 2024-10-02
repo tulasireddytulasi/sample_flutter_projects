@@ -19,12 +19,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late AuthProvider authProvider;
   late ProfileProvider profileProvider;
   late SharedPreferences sharedPreferences;
+  late ValueNotifier<bool> _isLoading;
 
   @override
   void initState() {
     super.initState();
     authProvider = Provider.of<AuthProvider>(context, listen: false);
     profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    _isLoading = ValueNotifier<bool>(false);
     getUserData();
   }
 
@@ -79,19 +81,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         )),
                 const SizedBox(height: 30),
                 const Spacer(),
-                Selector<ProfileProvider, bool>(
-                    selector: (_, provider) => provider.isLoading,
-                    builder: (context, isLoading, child) {
-                    return SizedBox(
-                      width: 240,
-                      height: 60,
-                      child: PrimaryButton(
-                        title: "Logout",
-                        isLoading: isLoading,
-                        onPressed: logout,
-                      ),
-                    );
-                  }
+                Center(
+                  child: SizedBox(
+                    width: 240,
+                    height: 60,
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: _isLoading,
+                      builder: (context, isLoading, child) {
+                        return PrimaryButton(
+                          title: "Logout",
+                          isLoading: isLoading,
+                          onPressed: logout,
+                        );
+                      },
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 20),
               ],
@@ -103,22 +107,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> logout() async {
-    profileProvider.setIsLoading = true;
-    final logoutResponse = await authProvider.logout();
-    profileProvider.setIsLoading = false;
-    if (!context.mounted) return;
-    if (logoutResponse.isSuccess) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-            (route) => false,
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Failed to login with otp"),
-        ),
-      );
+    try {
+      if (_isLoading.value) return;
+      _isLoading.value = true;
+      final logoutResponse = await authProvider.logout();
+      if (!mounted) return;
+      if (logoutResponse.isSuccess) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false,
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Failed to login with otp"),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error: $e");
+    } finally {
+      _isLoading.value = false;
     }
   }
 }
