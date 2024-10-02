@@ -117,7 +117,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
         final otpResponse = await authProvider.sendOTP(email: email);
 
         /// DON'T use BuildContext across asynchronous gaps.
-        if (!context.mounted) return;
+        if (!mounted) return;
         if (otpResponse.isSuccess) {
           Navigator.push(
             context,
