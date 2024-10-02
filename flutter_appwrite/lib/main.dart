@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_appwrite/controllers/local_data.dart';
 import 'package:flutter_appwrite/provider/auth_provider.dart';
 import 'package:flutter_appwrite/provider/profile_provider.dart';
+import 'package:flutter_appwrite/provider/storage_provider.dart';
 import 'package:flutter_appwrite/view/home/home.dart';
 import 'package:flutter_appwrite/view/login/login.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        ChangeNotifierProvider(create: (_) => StorageProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

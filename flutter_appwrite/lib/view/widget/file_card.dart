@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_appwrite/provider/storage_provider.dart';
+import 'package:flutter_appwrite/utils/app_enums.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class FileCard extends StatefulWidget {
-  const FileCard({super.key, required this.filePath, required this.width});
+  const FileCard({super.key, required this.file, required this.width});
 
-  final String filePath;
+  final XFile file;
   final double width;
 
   @override
@@ -14,118 +17,85 @@ class FileCard extends StatefulWidget {
 }
 
 class _FileCardState extends State<FileCard> {
+  final double fileSize = 50;
   String filePath = "";
+  late StorageProvider storageProvider;
+  final String errorMessage = "Opps unknown error occurred...";
+  final String successMessage = "File Uploaded successfully";
 
-  // "/data/user/0/com.example.flutter_appwrite/cache/ff881a10-af5c-498e-b64b-9cb6d1744ada/1000081406.jpg";
-
-  onClick() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image == null) return;
-    filePath = image.path;
-    print("filePath: $filePath");
-    setState(() {});
-  }
-
-  double normalizeToProgressBar(double receivedValue, double minValue, double maxValue) {
-    return (receivedValue - minValue) / (maxValue - minValue);
-  }
-
-  // Async* function to generate numbers from 0 to 100
-  Stream<double> generateNumbers() async* {
-    for (int i = 0; i <= 100; i++) {
-      await Future.delayed(const Duration(milliseconds: 10)); // Simulate delay
-      final double val = normalizeToProgressBar(i.toDouble(), 0, 100);
-      // if(i > 40) throw Exception("Upload Error 123");
-      // print("val: $val");
-      yield val; // Yield each number
-    }
+  Future<double> generateNumbers2() async {
+    await Future.delayed(const Duration(seconds: 2));
+    return 0.5;
   }
 
   @override
   void initState() {
     super.initState();
-    print("filePath: ${widget.filePath}");
+    storageProvider = Provider.of<StorageProvider>(context, listen: false);
+    print("filePath: ${widget.file.path}");
   }
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: GestureDetector(
-        onTap: onClick,
-        child: Container(
-          width: widget.width,
-          height: 80,
-          constraints: const BoxConstraints(maxWidth: 600),
-          alignment: Alignment.center,
-          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          decoration: BoxDecoration(
-            color: Colors.lightBlue.withOpacity(0.4),
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                widget.filePath.isNotEmpty
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.file(
-                          width: 70,
-                          height: 70,
-                          fit: BoxFit.cover,
-                          File(widget.filePath),
-                          errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                            return const Center(child: Text('This image type is not supported'));
-                          },
+      child: Container(
+        width: widget.width,
+        height: 70,
+        constraints: const BoxConstraints(maxWidth: 600),
+        alignment: Alignment.center,
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        decoration: BoxDecoration(
+          color: Colors.lightBlue.withOpacity(0.4),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              widget.file.path.isNotEmpty
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(
+                        width: fileSize,
+                        height: fileSize,
+                        fit: BoxFit.cover,
+                        File(widget.file.path),
+                        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                          return const Center(child: Text('This image type is not supported'));
+                        },
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+              const SizedBox(width: 10),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(widget.file.name, style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 0),
+                  Text(
+                    "456 kb / kb",
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.black.withOpacity(0.4),
+                      fontSize: 14,
                         ),
-                      )
-                    : const SizedBox.shrink(),
-                const SizedBox(width: 10),
-                StreamBuilder<double>(
-                  stream: generateNumbers(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text("Waiting to Uploading...", style: Theme.of(context).textTheme.titleMedium);
-                    } else if (snapshot.hasError) {
-                      return SizedBox(
-                        width: 200,
-                        child: Text(
-                          "Opps unknown error occurred...",
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Colors.red,
-                              ),
-                        ),
-                      );
-                    } else if (snapshot.hasData) {
-                      final double val = snapshot.data as double;
-                      return Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text("File Uploading...", style: Theme.of(context).textTheme.titleMedium),
-                          const SizedBox(height: 8),
-                          Text("100%", style: Theme.of(context).textTheme.titleMedium),
-                          SizedBox(
-                            width: 200,
-                            child: LinearProgressIndicator(
-                              value: val,
-                              valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
-                            ),
-                          )
-                        ],
-                      );
-                    } else {
-                      return const Text('No data');
-                    }
-                  },
-                ),
-              ],
-            ),
+                  ),
+                  // if (fileUploadStatus == FileUploadStatus.loading)
+                    const SizedBox(
+                      width: 200,
+                      child: LinearProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                      ),
+                    ),
+                ],
+              ),
+              const Spacer(),
+              const Center(child: Icon(Icons.check_circle_outline, size: 34, color: Colors.green,)),
+            ],
           ),
         ),
       ),

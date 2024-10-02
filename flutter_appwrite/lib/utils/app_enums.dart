@@ -1,0 +1,1 @@
+enum FileUploadStatus {loading, success, error}

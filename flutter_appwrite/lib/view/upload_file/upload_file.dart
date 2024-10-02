@@ -10,15 +10,14 @@ class UploadFile extends StatefulWidget {
 }
 
 class _UploadFileState extends State<UploadFile> {
-  final List<String> filePathsList = [];
+  final List<XFile> filePathsList = [];
 
   onClick() async {
     final ImagePicker picker = ImagePicker();
     final List<XFile> imagesList = await picker.pickMultiImage(limit: 10);
     if (imagesList.isEmpty) return;
-    for (var element in imagesList) {
-      filePathsList.add(element.path);
-    }
+    filePathsList.clear();
+    filePathsList.addAll(imagesList);
     setState(() {});
   }
 
@@ -77,7 +76,7 @@ class _UploadFileState extends State<UploadFile> {
                     ...List.generate(
                       filePathsList.length,
                       (index) {
-                        return FileCard(width: width/1.1, filePath: filePathsList[index]);
+                        return FileCard(width: width/1.1, file: filePathsList[index]);
                       },
                     ),
                   ],
