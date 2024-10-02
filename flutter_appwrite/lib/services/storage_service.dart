@@ -15,7 +15,12 @@ class StorageService {
         bucketId: AppwriteConfig.storageBucket,
         fileId: ID.unique(),
         file: image,
-        onProgress: (r){}
+        onProgress: (progress){
+          print("chunksTotal: ${progress.chunksTotal}");
+          print("chunksUploaded: ${progress.chunksUploaded}");
+          print("progress: ${progress.progress}");
+          print("sizeUploaded: ${progress.sizeUploaded}");
+        }
       );
       return response;
     } catch (e) {
