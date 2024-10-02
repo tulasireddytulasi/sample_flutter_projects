@@ -138,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text("Failed to send otp"),
+              content: Text("Failed to send OTP"),
             ),
           );
         }
