@@ -63,6 +63,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                   maxLines: 1,
                   validator: AppValidators.validateEmail,
                   decoration: const InputDecoration(
+                    counterText: "",
                     hintText: "Enter your email",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)),

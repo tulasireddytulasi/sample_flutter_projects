@@ -95,6 +95,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   maxLength: 10,
                   maxLines: 1,
                   decoration: const InputDecoration(
+                    counterText: "",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       borderSide: BorderSide(color: Colors.black, width: 1),

@@ -69,6 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   maxLines: 1,
                   validator: AppValidators.validateMobileNo,
                   decoration: const InputDecoration(
+                    counterText: "",
                     hintText: "Enter Mobile No",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
