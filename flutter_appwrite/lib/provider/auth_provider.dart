@@ -89,7 +89,6 @@ class AuthProvider extends ChangeNotifier {
           userDocument = resultDoc.success!;
           sharedPreferences.setString("userId", userDocument.$id);
         }
-        ;
       }
 
       // Todo: Save data in Local DB
