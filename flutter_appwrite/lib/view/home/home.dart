@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_appwrite/view/profile/profile_screen.dart';
+import 'package:flutter_appwrite/view/upload_file/upload_file.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,9 +20,14 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
               onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const UploadFile()));
+              },
+              icon: const Icon(Icons.add)),
+          IconButton(
+              onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
               },
-              icon: const Icon(Icons.person))
+              icon: const Icon(Icons.person)),
         ],
       ),
       body: const SafeArea(

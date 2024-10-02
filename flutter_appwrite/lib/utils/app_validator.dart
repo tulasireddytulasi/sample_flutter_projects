@@ -38,12 +38,6 @@ class AppValidators {
       return inValid;
     }
 
-    String pattern = r"^[6-9]\d{9}$";
-    RegExp regExp = RegExp(pattern);
-    if (!regExp.hasMatch(value)) {
-      return inValid;
-    }
-
     return null;
   }
 

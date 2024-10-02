@@ -14,9 +14,11 @@ class _UploadFileState extends State<UploadFile> {
 
   onClick() async {
     final ImagePicker picker = ImagePicker();
-    final List<XFile>? imagesList = await picker.pickMultiImage(limit: 10);
-    if (imagesList == null || imagesList.isEmpty) return;
-    imagesList.forEach((element) => filePathsList.add(element.path));
+    final List<XFile> imagesList = await picker.pickMultiImage(limit: 10);
+    if (imagesList.isEmpty) return;
+    for (var element in imagesList) {
+      filePathsList.add(element.path);
+    }
     setState(() {});
   }
 
@@ -32,28 +34,50 @@ class _UploadFileState extends State<UploadFile> {
         ),
       ),
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ...List.generate(
-                  filePathsList.length,
-                  (index) {
-                    return FileCard(filePath: filePathsList[index]);
-                  },
+        child: filePathsList.isEmpty
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    backgroundColor: Colors.blueAccent,
+                    radius: 40,
+                    child: IconButton(
+                      onPressed: onClick,
+                      icon: const Icon(
+                        Icons.add,
+                        size: 50,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    "Upload Files",
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                ],
+              )
+            : SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    ...List.generate(
+                      filePathsList.length,
+                      (index) {
+                        return FileCard(filePath: filePathsList[index]);
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: onClick,
-        shape: const CircleBorder(),
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.add, size: 50, color: Colors.white),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: onClick,
+      //   shape: const CircleBorder(),
+      //   backgroundColor: Colors.green,
+      //   child: const Icon(Icons.add, size: 50, color: Colors.white),
+      // ),
     );
   }
 }

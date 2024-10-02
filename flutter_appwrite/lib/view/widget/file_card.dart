@@ -49,78 +49,81 @@ class _FileCardState extends State<FileCard> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onClick,
-      child: Container(
-        width: 300,
-        height: 80,
-        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        decoration: BoxDecoration(
-          color: Colors.lightBlue.withOpacity(0.4),
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              widget.filePath.isNotEmpty
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.file(
-                        width: 70,
-                        height: 70,
-                        fit: BoxFit.cover,
-                        File(widget.filePath),
-                        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                          return const Center(child: Text('This image type is not supported'));
-                        },
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-              const SizedBox(width: 10),
-              StreamBuilder<double>(
-                stream: generateNumbers(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text("Waiting to Uploading...", style: Theme.of(context).textTheme.titleMedium);
-                  } else if (snapshot.hasError) {
-                    return SizedBox(
-                      width: 200,
-                      child: Text(
-                        "Opps unknown error occurred...",
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Colors.red,
+    return Center(
+      child: GestureDetector(
+        onTap: onClick,
+        child: Container(
+          width: 300,
+          height: 80,
+          alignment: Alignment.center,
+          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          decoration: BoxDecoration(
+            color: Colors.lightBlue.withOpacity(0.4),
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                widget.filePath.isNotEmpty
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.file(
+                          width: 70,
+                          height: 70,
+                          fit: BoxFit.cover,
+                          File(widget.filePath),
+                          errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                            return const Center(child: Text('This image type is not supported'));
+                          },
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+                const SizedBox(width: 10),
+                StreamBuilder<double>(
+                  stream: generateNumbers(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Text("Waiting to Uploading...", style: Theme.of(context).textTheme.titleMedium);
+                    } else if (snapshot.hasError) {
+                      return SizedBox(
+                        width: 200,
+                        child: Text(
+                          "Opps unknown error occurred...",
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: Colors.red,
+                              ),
+                        ),
+                      );
+                    } else if (snapshot.hasData) {
+                      final double val = snapshot.data as double;
+                      return Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text("File Uploading...", style: Theme.of(context).textTheme.titleMedium),
+                          const SizedBox(height: 8),
+                          Text("100%", style: Theme.of(context).textTheme.titleMedium),
+                          SizedBox(
+                            width: 200,
+                            child: LinearProgressIndicator(
+                              value: val,
+                              valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
                             ),
-                      ),
-                    );
-                  } else if (snapshot.hasData) {
-                    final double val = snapshot.data as double;
-                    return Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text("File Uploading...", style: Theme.of(context).textTheme.titleMedium),
-                        const SizedBox(height: 8),
-                        Text("100%", style: Theme.of(context).textTheme.titleMedium),
-                        SizedBox(
-                          width: 200,
-                          child: LinearProgressIndicator(
-                            value: val,
-                            valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
-                          ),
-                        )
-                      ],
-                    );
-                  } else {
-                    return const Text('No data');
-                  }
-                },
-              ),
-            ],
+                          )
+                        ],
+                      );
+                    } else {
+                      return const Text('No data');
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

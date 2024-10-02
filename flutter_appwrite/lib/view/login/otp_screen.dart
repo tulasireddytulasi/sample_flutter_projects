@@ -94,7 +94,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: AppValidators.validateOTP,
-                  maxLength: 10,
+                  maxLength: 6,
                   maxLines: 1,
                   decoration: const InputDecoration(
                     counterText: "",
