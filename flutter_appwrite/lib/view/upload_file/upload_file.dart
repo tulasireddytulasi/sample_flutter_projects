@@ -27,37 +27,48 @@ class _UploadFileState extends State<UploadFile> {
     final double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Upload File Screen", style: Theme.of(context).textTheme.titleMedium),
+        title: Text("Upload File", style: Theme.of(context).textTheme.titleLarge),
         elevation: 4,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back_ios_rounded),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+               filePathsList.clear();
+               setState(() {});
+              },
+              icon: const Icon(Icons.clear, size: 32)),
+        ],
       ),
       body: SafeArea(
         child: filePathsList.isEmpty
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.blueAccent,
-                    radius: 40,
-                    child: IconButton(
-                      onPressed: onClick,
-                      icon: const Icon(
-                        Icons.add,
-                        size: 50,
-                        color: Colors.white,
+            ? Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.blueAccent,
+                      radius: 40,
+                      child: IconButton(
+                        onPressed: onClick,
+                        icon: const Icon(
+                          Icons.add,
+                          size: 50,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "Upload Files",
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                ],
-              )
+                    const SizedBox(height: 10),
+                    Text(
+                      "Upload Files",
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                  ],
+                ),
+            )
             : SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
