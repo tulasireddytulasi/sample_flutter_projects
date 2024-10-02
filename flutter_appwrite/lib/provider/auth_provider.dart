@@ -13,12 +13,19 @@ class AuthProvider extends ChangeNotifier {
   late AuthService authService;
   late UserService userService;
   late SharedPreferences sharedPreferences;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
 
   /// Initialize
   Future<void> init() async {
     authService = AuthService(client);
     userService = UserService(client);
     sharedPreferences = await SharedPreferences.getInstance();
+  }
+
+  set setIsLoading(bool isLoading) {
+    _isLoading = isLoading;
+    notifyListeners();
   }
 
   Future<Result<bool, bool>> checkSession() async {
@@ -31,7 +38,9 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<Result<bool, bool>> loginWithOTP({required String otp, required String userId}) async {
+    setIsLoading = true;
     final res = await authService.loginWithOTP(otp: otp, userId: userId);
+    setIsLoading = false;
     if (res.isSuccess) {
       return Result(success: res.isSuccess);
     } else {
@@ -45,6 +54,7 @@ class AuthProvider extends ChangeNotifier {
         return Result(error: "No Phone Number or Email provided");
       }
 
+      setIsLoading = true;
       List<String> queries = [];
 
       if (phoneNo.isNotNullOrNotEmpty && email.isNullOrEmpty) {
@@ -89,6 +99,8 @@ class AuthProvider extends ChangeNotifier {
       }
     } catch (e, s) {
       return Result(error: "sendOTP(): Error: $e", errorMessage: "Error Stack: $s");
+    } finally {
+      setIsLoading = false;
     }
   }
 

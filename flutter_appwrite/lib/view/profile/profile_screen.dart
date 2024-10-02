@@ -4,6 +4,7 @@ import 'package:flutter_appwrite/provider/auth_provider.dart';
 import 'package:flutter_appwrite/provider/profile_provider.dart';
 import 'package:flutter_appwrite/view/login/login.dart';
 import 'package:flutter_appwrite/view/profile/widget/profile_pic_widget.dart';
+import 'package:flutter_appwrite/view/widget/primary_button.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,6 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text("Profile Screen", style: Theme.of(context).textTheme.titleMedium),
@@ -77,44 +79,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         )),
                 const SizedBox(height: 30),
                 const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 70,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final logoutResponse = await authProvider.logout();
-                        if (!context.mounted) return;
-                        if (logoutResponse.isSuccess) {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (context) => const LoginScreen()),
-                            (route) => false,
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Failed to login with otp"),
-                            ),
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        backgroundColor: Colors.blueAccent,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                Selector<ProfileProvider, bool>(
+                    selector: (_, provider) => provider.isLoading,
+                    builder: (context, isLoading, child) {
+                    return SizedBox(
+                      width: 240,
+                      height: 60,
+                      child: PrimaryButton(
+                        title: "Logout",
+                        isLoading: isLoading,
+                        onPressed: () async {
+                          profileProvider.setIsLoading = true;
+                          final logoutResponse = await authProvider.logout();
+                          profileProvider.setIsLoading = false;
+                          if (!context.mounted) return;
+                          if (logoutResponse.isSuccess) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => const LoginScreen()),
+                                  (route) => false,
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Failed to login with otp"),
+                              ),
+                            );
+                          }
+                        },
                       ),
-                      child: const Text(
-                        "Logout",
-                        style: TextStyle(
-                          fontSize: 24,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
+                    );
+                  }
                 ),
                 const SizedBox(height: 20),
               ],
