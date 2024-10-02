@@ -14,6 +14,7 @@ class AuthProvider extends ChangeNotifier {
   late UserService userService;
   late SharedPreferences sharedPreferences;
   bool _isLoading = false;
+
   bool get isLoading => _isLoading;
 
   /// Initialize
@@ -87,7 +88,8 @@ class AuthProvider extends ChangeNotifier {
         if (resultDoc.isSuccess) {
           userDocument = resultDoc.success!;
           sharedPreferences.setString("userId", userDocument.$id);
-        };
+        }
+        ;
       }
 
       // Todo: Save data in Local DB
@@ -106,6 +108,9 @@ class AuthProvider extends ChangeNotifier {
 
   Future<Result<bool, bool>> logout() async {
     final res = await authService.logout();
+    if (res.isSuccess) {
+      sharedPreferences.clear();
+    }
     return Result(success: res.isSuccess);
   }
 }
