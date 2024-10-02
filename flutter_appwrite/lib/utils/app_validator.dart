@@ -28,6 +28,25 @@ class AppValidators {
     return null;
   }
 
+  static String? validateOTP(String? value) {
+    const String kEmptyValidator = "This field is required";
+    const String inValid = "Invalid OTP";
+
+    if (value == null || value.isEmpty) {
+      return kEmptyValidator;
+    } else if (value.length != 6) {
+      return inValid;
+    }
+
+    String pattern = r"^[6-9]\d{9}$";
+    RegExp regExp = RegExp(pattern);
+    if (!regExp.hasMatch(value)) {
+      return inValid;
+    }
+
+    return null;
+  }
+
   // Email validation function
   static String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {

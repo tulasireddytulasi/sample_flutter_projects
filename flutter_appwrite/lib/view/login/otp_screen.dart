@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_appwrite/provider/auth_provider.dart';
+import 'package:flutter_appwrite/utils/app_validator.dart';
 import 'package:flutter_appwrite/view/home/home.dart';
 import 'package:flutter_appwrite/view/widget/primary_button.dart';
 import 'package:provider/provider.dart';
@@ -92,6 +93,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   controller: otpController,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: AppValidators.validateOTP,
                   maxLength: 10,
                   maxLines: 1,
                   decoration: const InputDecoration(
