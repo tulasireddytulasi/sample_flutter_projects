@@ -27,6 +27,12 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
   }
 
   @override
+  void dispose() {
+    emailController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

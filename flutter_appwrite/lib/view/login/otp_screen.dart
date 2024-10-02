@@ -27,6 +27,12 @@ class _OtpScreenState extends State<OtpScreen> {
     _isLoading = ValueNotifier<bool>(false);
   }
 
+  @override
+  void dispose() {
+    otpController.dispose();
+    super.dispose();
+  }
+
   Future<void> otpLogin() async {
     try {
       if (_formKey.currentState!.validate()) {
