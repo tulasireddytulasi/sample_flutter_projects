@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_appwrite/provider/auth_provider.dart';
 import 'package:flutter_appwrite/view/home/home.dart';
+import 'package:flutter_appwrite/view/widget/primary_button.dart';
 import 'package:provider/provider.dart';
 
 class OtpScreen extends StatefulWidget {
@@ -17,14 +18,16 @@ class _OtpScreenState extends State<OtpScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController otpController = TextEditingController();
   late AuthProvider authProvider;
+  late ValueNotifier<bool> _isLoading;
 
   @override
   void initState() {
     super.initState();
     authProvider = Provider.of<AuthProvider>(context, listen: false);
+    _isLoading = ValueNotifier<bool>(false);
   }
 
-  void otpLogin() async {
+  Future<void> otpLogin() async {
     try {
       if (_formKey.currentState!.validate()) {
         final String otp = otpController.text.trim();
@@ -50,6 +53,8 @@ class _OtpScreenState extends State<OtpScreen> {
       }
     } catch (e) {
       print("OTP Error: $e");
+    } finally {
+      _isLoading.value = false;
     }
   }
 
@@ -57,50 +62,49 @@ class _OtpScreenState extends State<OtpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("OTP Screen", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 30),
-                  TextFormField(
-                    controller: otpController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    maxLength: 10,
-                    maxLines: 1,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        borderSide: BorderSide(color: Colors.black, width: 1),
-                      ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("OTP Screen", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 30),
+                TextFormField(
+                  controller: otpController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  maxLength: 10,
+                  maxLines: 1,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      borderSide: BorderSide(color: Colors.black, width: 1),
                     ),
                   ),
-                  const SizedBox(height: 30),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 70,
-                    child: ElevatedButton(
-                      onPressed: otpLogin,
-                      style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        backgroundColor: Colors.blueAccent,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      child: const Text(
-                        "Login",
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                      ),
+                ),
+                const SizedBox(height: 30),
+                const Spacer(),
+                Center(
+                  child: SizedBox(
+                    width: 240,
+                    height: 60,
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: _isLoading,
+                      builder: (context, hasConsent, child) {
+                        return PrimaryButton(
+                          title: "Login with OTP",
+                          isLoading: _isLoading.value,
+                          onPressed: otpLogin,
+                        );
+                      },
                     ),
                   ),
-                  const SizedBox(height: 20),
-                ],
-              ),
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
           ),
         ),
