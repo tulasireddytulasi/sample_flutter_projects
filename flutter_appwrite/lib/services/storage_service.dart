@@ -1,6 +1,5 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
-import 'package:flutter_appwrite/services/appwrite_config.dart';
 
 class StorageService {
   final Client client;
