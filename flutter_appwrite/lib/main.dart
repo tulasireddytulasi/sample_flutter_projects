@@ -51,9 +51,12 @@ class _CheckUserSessionsState extends State<CheckUserSessions> {
   Future<void> checkSession() async {
     final AuthProvider authProvider = Provider.of<AuthProvider>(context, listen: false);
     final ProfileProvider profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final StorageProvider storageProvider = Provider.of<StorageProvider>(context, listen: false);
+
     await authProvider.init();
-    profileProvider.init();
-    LocalSavedData.init();
+    await profileProvider.init();
+    await LocalSavedData.init();
+    await storageProvider.init();
 
     authProvider.checkSession().then(
       (result) {
