@@ -8,11 +8,11 @@ class StorageService {
   StorageService(this.client);
 
   // upload and save image to storage bucket (create new image)
-  Future<File> uploadFileToBucket({required InputFile image}) async {
+  Future<File> uploadFileToBucket({required InputFile image, required String bucketId}) async {
     Storage storage = Storage(client);
     try {
       final response = await storage.createFile(
-        bucketId: AppwriteConfig.storageBucket,
+        bucketId: bucketId,
         fileId: ID.unique(),
         file: image,
         onProgress: (progress){
@@ -28,10 +28,10 @@ class StorageService {
     }
   }
 
-  Future<bool> deleteImageFromBucket({required String imageId}) async {
+  Future<bool> deleteImageFromBucket({required String bucketId,required String imageId}) async {
     Storage storage = Storage(client);
     try {
-      await storage.deleteFile(bucketId: AppwriteConfig.storageBucket, fileId: imageId);
+      await storage.deleteFile(bucketId: bucketId, fileId: imageId);
       return true;
     } catch (e) {
      rethrow;

@@ -87,11 +87,11 @@ class ProfileProvider extends ChangeNotifier {
       // if image already exist for the user profile or not
       if (fileId.isNotEmpty) {
         // then update the image
-        file = await storageService.uploadFileToBucket(image: inputFile);
-        await storageService.deleteImageFromBucket(imageId: fileId);
+        file = await storageService.uploadFileToBucket(image: inputFile, bucketId: AppwriteConfig.profileBucketId);
+        await storageService.deleteImageFromBucket(bucketId: AppwriteConfig.profileBucketId, imageId: fileId);
         finalFileId = file.$id;
       } else {
-        file = await storageService.uploadFileToBucket(image: inputFile);
+        file = await storageService.uploadFileToBucket(image: inputFile, bucketId: AppwriteConfig.profileBucketId);
         finalFileId = file.$id;
       }
 
@@ -121,7 +121,7 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   String getFileLink({required String fileId}) {
-    final String fileLink = "${AppwriteConfig.baseUrl}/storage/buckets/${AppwriteConfig.storageBucket}/files/$fileId/view?project=${AppwriteConfig.projectId}";
+    final String fileLink = "${AppwriteConfig.baseUrl}/storage/buckets/${AppwriteConfig.profileBucketId}/files/$fileId/view?project=${AppwriteConfig.projectId}";
     return fileLink;
   }
 }

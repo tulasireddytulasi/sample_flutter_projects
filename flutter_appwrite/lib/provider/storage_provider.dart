@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_appwrite/services/appwrite_client.dart';
+import 'package:flutter_appwrite/services/appwrite_config.dart';
 import 'package:flutter_appwrite/services/auth_service.dart';
 import 'package:flutter_appwrite/services/storage_service.dart';
 import 'package:flutter_appwrite/services/user_service.dart';
@@ -26,7 +27,10 @@ class StorageProvider extends ChangeNotifier {
     try {
       final fileByes = await File(file.path).readAsBytes();
       final inputFile = InputFile.fromBytes(bytes: fileByes, filename: file.name);
-      final file_model.File resFile = await storageService.uploadFileToBucket(image: inputFile);
+      final file_model.File resFile = await storageService.uploadFileToBucket(
+        image: inputFile,
+        bucketId: AppwriteConfig.galleryBucketId,
+      );
       final String finalFileId = resFile.$id;
       // await Future.delayed(const Duration(seconds: 2));
       return Result(success: true, successMessage: "File Upload Successfully");
