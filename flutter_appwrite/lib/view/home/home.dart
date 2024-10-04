@@ -41,8 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final Result<DocumentList, String> photosResponse = await homeProvider.getGalleryPhotos(queries: queries);
     final DocumentList documentList = photosResponse.success!;
     String finalLastId = documentList.documents.lastOrNull?.$id ?? "";
-    final isLastPage = documentList.total < 5;
-    print("isLastPage: $isLastPage, total: ${documentList.total}, finalLastId: $finalLastId");
+    final isLastPage = documentList.documents.length < 5;
+    print("isLastPage: $isLastPage, total: ${documentList.documents.length}, finalLastId: $finalLastId");
     final List<PhotoModel> photoModelList = List<PhotoModel>.from(
       documentList.documents.map((x) => PhotoModel.fromJson(x.data)),
     );
