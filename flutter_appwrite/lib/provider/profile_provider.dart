@@ -10,6 +10,7 @@ import 'package:flutter_appwrite/services/auth_service.dart';
 import 'package:flutter_appwrite/services/storage_service.dart';
 import 'package:flutter_appwrite/services/user_service.dart';
 import 'package:flutter_appwrite/utils/app_exceptions.dart';
+import 'package:flutter_appwrite/utils/common_functins.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:appwrite/models.dart' as file_model;
 
@@ -116,12 +117,12 @@ class ProfileProvider extends ChangeNotifier {
   void setUserData() async {
     userId = userModel.userId.toString();
     profilePicId = userModel.profilePic.toString();
-    profilePic = profilePicId.isNotEmpty ? getFileLink(fileId: profilePicId) : "";
+    profilePic = profilePicId.isNotEmpty
+        ? getFileLink(
+            fileId: profilePicId,
+            bucketId: AppwriteConfig.profileBucketId,
+          )
+        : "";
     data = [userModel.name.toString(), userModel.email.toString(), userModel.phoneNo.toString()];
-  }
-
-  String getFileLink({required String fileId}) {
-    final String fileLink = "${AppwriteConfig.baseUrl}/storage/buckets/${AppwriteConfig.profileBucketId}/files/$fileId/view?project=${AppwriteConfig.projectId}";
-    return fileLink;
   }
 }

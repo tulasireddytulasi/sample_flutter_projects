@@ -13,10 +13,9 @@ class PhotoModel {
   String? filePath;
   String? title;
   String? description;
-  List<String>? actorType;
+  String? actorType;
   String? contentType;
   String? uploadedBy;
-  List<String>? tags;
   DateTime? uploadDate;
   int? likes;
   int? downloads;
@@ -29,7 +28,6 @@ class PhotoModel {
     this.actorType,
     this.contentType,
     this.uploadedBy,
-    this.tags,
     this.uploadDate,
     this.likes,
     this.downloads,
@@ -40,10 +38,9 @@ class PhotoModel {
     filePath: json["file_path"],
     title: json["title"],
     description: json["description"],
-    actorType: json["actor_type"] == null ? [] : List<String>.from(json["actor_type"]!.map((x) => x)),
+    actorType: json["actor_type"],
     contentType: json["content_type"],
     uploadedBy: json["uploaded_by"],
-    tags: json["tags"] == null ? [] : List<String>.from(json["tags"]!.map((x) => x)),
     uploadDate: json["upload_date"] == null ? null : DateTime.parse(json["upload_date"]),
     likes: json["likes"],
     downloads: json["downloads"],
@@ -54,10 +51,9 @@ class PhotoModel {
     "file_path": filePath,
     "title": title,
     "description": description,
-    "actor_type": actorType == null ? [] : List<dynamic>.from(actorType!.map((x) => x)),
+    "actor_type": actorType,
     "content_type": contentType,
     "uploaded_by": uploadedBy,
-    "tags": tags == null ? [] : List<dynamic>.from(tags!.map((x) => x)),
     "upload_date": uploadDate?.toIso8601String(),
     "likes": likes,
     "downloads": downloads,

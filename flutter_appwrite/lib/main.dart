@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_appwrite/controllers/local_data.dart';
 import 'package:flutter_appwrite/provider/auth_provider.dart';
+import 'package:flutter_appwrite/provider/home_provider.dart';
 import 'package:flutter_appwrite/provider/profile_provider.dart';
 import 'package:flutter_appwrite/provider/storage_provider.dart';
 import 'package:flutter_appwrite/view/home/home.dart';
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => StorageProvider()),
+        ChangeNotifierProvider(create: (_) => HomeProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -52,11 +54,13 @@ class _CheckUserSessionsState extends State<CheckUserSessions> {
     final AuthProvider authProvider = Provider.of<AuthProvider>(context, listen: false);
     final ProfileProvider profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     final StorageProvider storageProvider = Provider.of<StorageProvider>(context, listen: false);
+    final HomeProvider homeProvider = Provider.of<HomeProvider>(context, listen: false);
 
     await authProvider.init();
     await profileProvider.init();
     await LocalSavedData.init();
     await storageProvider.init();
+    await homeProvider.init();
 
     authProvider.checkSession().then(
       (result) {
