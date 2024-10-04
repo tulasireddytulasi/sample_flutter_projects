@@ -65,7 +65,10 @@ class AuthProvider extends ChangeNotifier {
         queries = [Query.equal("email", email)];
       }
 
-      final usersList = await userService.getDocumentsList(queries: queries);
+      final usersList = await userService.getDocumentsList(
+        collectionId: AppwriteConfig.userCollection,
+        queries: queries,
+      );
 
       if (!usersList.isSuccess) {
         return Result(error: usersList.error, errorMessage: usersList.errorMessage);

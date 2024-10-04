@@ -24,12 +24,15 @@ class UserService {
   }
 
   /// Get Documents List
-  Future<Result<DocumentList, String>> getDocumentsList({List<String>? queries}) async {
+  Future<Result<DocumentList, String>> getDocumentsList({
+    required String collectionId,
+    List<String>? queries,
+  }) async {
     try {
       Databases database = Databases(client);
       final DocumentList documentList = await database.listDocuments(
         databaseId: AppwriteConfig.db,
-        collectionId: AppwriteConfig.userCollection,
+        collectionId: collectionId,
         queries: queries,
       );
       return Result(success: documentList);
