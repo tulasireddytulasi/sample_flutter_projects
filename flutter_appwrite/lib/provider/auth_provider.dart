@@ -2,6 +2,7 @@ import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_appwrite/services/appwrite_client.dart';
+import 'package:flutter_appwrite/services/appwrite_config.dart';
 import 'package:flutter_appwrite/services/auth_service.dart';
 import 'package:flutter_appwrite/services/user_service.dart';
 import 'package:flutter_appwrite/utils/app_exceptions.dart';
@@ -84,7 +85,7 @@ class AuthProvider extends ChangeNotifier {
       } else {
         tokenResponse = await authService.createPhoneOrEmailToken(userId: ID.unique(), email: email ?? "", phoneNo: phoneNo ?? "");
         Map<String, dynamic> data = {"phone_no": phoneNo, "email": email, "userId": tokenResponse.success!.userId};
-        final resultDoc = await userService.createDocument(userId: tokenResponse.success!.userId, data: data);
+        final resultDoc = await userService.createDocument(userId: tokenResponse.success!.userId, collectionId: AppwriteConfig.userCollection, data: data);
         if (resultDoc.isSuccess) {
           userDocument = resultDoc.success!;
           sharedPreferences.setString("userId", userDocument.$id);

@@ -41,13 +41,14 @@ class UserService {
   /// Create a new document
   Future<Result<Document, String>> createDocument({
     required String userId,
+    required String collectionId,
     required Map<String, dynamic> data,
   }) async {
     try {
       Databases database = Databases(client);
       final response = await database.createDocument(
         databaseId: AppwriteConfig.db,
-        collectionId: AppwriteConfig.userCollection,
+        collectionId: collectionId,
         documentId: userId,
         data: data,
       );
