@@ -75,25 +75,28 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: SafeArea(
-        child: PagedGridView<String, PhotoModel>(
-          showNewPageProgressIndicatorAsGridChild: false,
-          showNewPageErrorIndicatorAsGridChild: false,
-          showNoMoreItemsIndicatorAsGridChild: false,
-          pagingController: _pagingController,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            childAspectRatio: 9 / 16,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            crossAxisCount: 2,
-          ),
-          builderDelegate: PagedChildBuilderDelegate<PhotoModel>(
-            itemBuilder: (context, item, index) => InkWell(
-              onTap: () {
-               print("Photo URL: ${item.toJson()}");
-              },
-              child: PhotoCard(
-                key: ValueKey(item.filePath),
-                imageUrl: getFileLink(bucketId: AppwriteConfig.galleryBucketId, fileId: item.filePath ?? ""),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: PagedGridView<String, PhotoModel>(
+            showNewPageProgressIndicatorAsGridChild: false,
+            showNewPageErrorIndicatorAsGridChild: false,
+            showNoMoreItemsIndicatorAsGridChild: false,
+            pagingController: _pagingController,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              childAspectRatio: 9 / 16,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              crossAxisCount: 2,
+            ),
+            builderDelegate: PagedChildBuilderDelegate<PhotoModel>(
+              itemBuilder: (context, item, index) => InkWell(
+                onTap: () {
+                 print("Photo URL: ${item.toJson()}");
+                },
+                child: PhotoCard(
+                  key: ValueKey(item.filePath),
+                  imageUrl: getFileLink(bucketId: AppwriteConfig.galleryBucketId, fileId: item.filePath ?? ""),
+                ),
               ),
             ),
           ),
