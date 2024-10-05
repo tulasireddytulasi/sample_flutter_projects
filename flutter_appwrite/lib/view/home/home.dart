@@ -32,8 +32,14 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    _pagingController.dispose();
+    super.dispose();
+  }
+
   Future<void> _fetchGalleryPhotos({required String lastId}) async {
-    List<String> queries = [Query.limit(5)];
+    List<String> queries = [Query.limit(20), Query.orderDesc('upload_date')];
     if (lastId.isNotEmpty) {
       queries.add(Query.cursorAfter(lastId));
     }
