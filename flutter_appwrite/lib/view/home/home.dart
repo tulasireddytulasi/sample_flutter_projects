@@ -69,6 +69,9 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
         actions: [
           IconButton(
+              onPressed: () => _pagingController.refresh(),
+              icon: const Icon(Icons.refresh)),
+          IconButton(
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const UploadFile()));
               },
