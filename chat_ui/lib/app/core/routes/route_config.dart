@@ -75,7 +75,9 @@ class RouteConfig {
           },
         ),
       ],
-      errorPageBuilder: (context, state) => const MaterialPage(child: ErrorScreen(title: "URL Error")),
+      errorPageBuilder: (context, state) => const MaterialPage(
+        child: ErrorScreen(title: "URL Error"),
+      ),
     );
   }
 }
