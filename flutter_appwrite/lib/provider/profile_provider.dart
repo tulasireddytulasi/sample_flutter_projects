@@ -45,6 +45,19 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setUserData() async {
+    userId = userModel.userId.toString();
+    name = userModel.name.toString();
+    profilePicId = userModel.profilePic.toString();
+    profilePic = profilePicId.isNotEmpty
+        ? getFileLink(
+      fileId: profilePicId,
+      bucketId: AppwriteConfig.profileBucketId,
+    )
+        : "";
+    data = [userModel.name.toString(), userModel.email.toString(), userModel.phoneNo.toString()];
+  }
+
   Future<Result<bool, String>> getUserDetails({required String documentId}) async {
     try {
       setIsLoading = true;
@@ -129,18 +142,5 @@ class ProfileProvider extends ChangeNotifier {
     } finally {
       setIsLoading = false;
     }
-  }
-
-  void setUserData() async {
-    userId = userModel.userId.toString();
-    name = userModel.name.toString();
-    profilePicId = userModel.profilePic.toString();
-    profilePic = profilePicId.isNotEmpty
-        ? getFileLink(
-            fileId: profilePicId,
-            bucketId: AppwriteConfig.profileBucketId,
-          )
-        : "";
-    data = [userModel.name.toString(), userModel.email.toString(), userModel.phoneNo.toString()];
   }
 }

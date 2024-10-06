@@ -15,9 +15,9 @@ class UpdateProfile extends StatefulWidget {
 
 class _UpdateProfileState extends State<UpdateProfile> {
   late ProfileProvider profileProvider;
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailNoController = TextEditingController();
-  final TextEditingController phoneNoController = TextEditingController();
+  late TextEditingController nameController;
+  late TextEditingController emailNoController;
+  late TextEditingController phoneNoController;
   late ValueNotifier<bool> _isLoading;
   final _formKey = GlobalKey<FormState>();
 
@@ -26,6 +26,13 @@ class _UpdateProfileState extends State<UpdateProfile> {
     super.initState();
     _isLoading = ValueNotifier<bool>(false);
     profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    setProfileData();
+  }
+
+  setProfileData() {
+    nameController = TextEditingController(text: profileProvider.data.first);
+    emailNoController = TextEditingController(text: profileProvider.data[1]);
+    phoneNoController = TextEditingController(text: profileProvider.data[2]);
   }
 
   @override
