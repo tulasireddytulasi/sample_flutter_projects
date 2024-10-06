@@ -1,9 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_appwrite/provider/auth_provider.dart';
 import 'package:flutter_appwrite/provider/profile_provider.dart';
 import 'package:flutter_appwrite/view/login/login.dart';
 import 'package:flutter_appwrite/view/profile/widget/profile_pic_widget.dart';
+import 'package:flutter_appwrite/view/update_profile/update_profile.dart';
 import 'package:flutter_appwrite/view/widget/primary_button.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,12 +47,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profile Screen", style: Theme.of(context).textTheme.titleMedium),
+        title: Text("Profile Screen", style: Theme.of(context).textTheme.titleLarge),
         elevation: 4,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back_ios_rounded),
         ),
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const UpdateProfile(),
+              ),
+            ),
+            icon: const Icon(Icons.mode_edit_rounded),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Padding(
@@ -75,10 +86,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 ...List.generate(
                     profileProvider.data.length,
-                    (index) => ListTile(
-                          leading: const Icon(Icons.person),
-                          title: Text(profileProvider.data[index]),
-                        )),
+                    (index) => Container(
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.4),
+                        borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: ListTile(
+                            leading: const Icon(Icons.person),
+                            title: Text(
+                              profileProvider.data[index],
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                    )),
                 const SizedBox(height: 30),
                 const Spacer(),
                 Center(

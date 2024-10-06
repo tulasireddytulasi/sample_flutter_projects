@@ -22,7 +22,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
   );
 
   final TextStyle logoutTextStyle = const TextStyle(
-    fontSize: 24,
+    fontSize: 20,
     color: Colors.white,
     fontWeight: FontWeight.bold,
   );
