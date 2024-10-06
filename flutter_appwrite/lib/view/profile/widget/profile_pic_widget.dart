@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_appwrite/provider/profile_provider.dart';
+import 'package:flutter_appwrite/utils/assets_path.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePicWidget extends StatefulWidget {
@@ -47,12 +49,13 @@ class _ProfilePicWidgetState extends State<ProfilePicWidget> {
           return InkWell(
             onTap: updateProfilePic,
             child: ClipOval(
-              child: Image.network(
-                profileProvider.profilePic,
+              child: CachedNetworkImage(
+                imageUrl: profileProvider.profilePic,
                 width: 70.0,
                 height: 70.0,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Text(
+                placeholder: (context, url) => Image.asset(Assets.movieThumbnail, fit: BoxFit.cover),
+                errorWidget: (context, url, error) => Text(
                   "Error: $error",
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
