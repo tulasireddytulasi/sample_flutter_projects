@@ -13,10 +13,14 @@ class HomeProvider extends ChangeNotifier {
   late AuthService authService;
   late UserService userService;
   late SharedPreferences sharedPreferences;
+  late Realtime realtime;
+  RealtimeSubscription? subscription;
+
 
   Future<void> init() async {
     authService = AuthService(client);
     userService = UserService(client);
+    realtime = Realtime(client);
     sharedPreferences = await SharedPreferences.getInstance();
   }
 
@@ -41,5 +45,23 @@ class HomeProvider extends ChangeNotifier {
       print("Get Photos Error: $e");
       return Result(error: "Get Photos Error: $e", errorMessage: "Get Photos Error Stack: $s");
     }
+  }
+
+  // Subscribe to realtime changes
+  subscribeToRealtime() {
+    subscription = realtime.subscribe([
+      "databases.${AppwriteConfig.db}.collections.${AppwriteConfig.userCollection}.documents",
+    ]);
+
+    print("Subscribed to realtime data");
+
+    subscription!.stream.listen((data) {
+      print("Some event happened");
+      print(data.events);
+      print(data.payload);
+      final firstItem = data.events.first.split(".");
+      final eventType = firstItem.lastOrNull;
+      print("Event type is $eventType");
+    });
   }
 }

@@ -27,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     homeProvider = Provider.of<HomeProvider>(context, listen: false);
+    homeProvider.subscribeToRealtime();
     _pagingController.addPageRequestListener((lastId) {
       _fetchGalleryPhotos(lastId: lastId);
     });
