@@ -82,9 +82,6 @@ class ProfileProvider extends ChangeNotifier {
       file_model.File file;
       String finalFileId = "";
 
-      // isLoading = true;
-      // notifyListeners();
-
       // if image already exist for the user profile or not
       if (fileId.isNotEmpty) {
         // then update the image
@@ -103,8 +100,6 @@ class ProfileProvider extends ChangeNotifier {
 
       userModel = userModelFromJson(json.encode(document.success?.data));
       setUserData();
-      // isLoading = false;
-      // notifyListeners();
       return Result(success: profilePic);
     } catch (e, s) {
       // isLoading = false;
@@ -114,8 +109,31 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
+  Future<Result<bool, String>> updateProfileData({
+    required String userId,
+    required Map<String, dynamic> profileData,
+  }) async {
+    try {
+      final document = await userService.updateDocument(
+        userId: userId,
+        data: profileData,
+      );
+
+      userModel = userModelFromJson(json.encode(document.success?.data));
+      setUserData();
+      notifyListeners();
+      return Result(success: true);
+    } catch (e, s) {
+      // isLoading = false;
+      return Result(error: "Unable to update profile Info. Error: $e", errorMessage: "Error Stack: $s");
+    } finally {
+      setIsLoading = false;
+    }
+  }
+
   void setUserData() async {
     userId = userModel.userId.toString();
+    name = userModel.name.toString();
     profilePicId = userModel.profilePic.toString();
     profilePic = profilePicId.isNotEmpty
         ? getFileLink(

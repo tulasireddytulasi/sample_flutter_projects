@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_appwrite/provider/profile_provider.dart';
 import 'package:flutter_appwrite/utils/app_validator.dart';
 import 'package:flutter_appwrite/view/widget/primary_button.dart';
 import 'package:flutter_appwrite/view/widget/textfield_widget.dart';
+import 'package:provider/provider.dart';
 
 class UpdateProfile extends StatefulWidget {
   const UpdateProfile({super.key});
@@ -12,6 +14,7 @@ class UpdateProfile extends StatefulWidget {
 }
 
 class _UpdateProfileState extends State<UpdateProfile> {
+  late ProfileProvider profileProvider;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailNoController = TextEditingController();
   final TextEditingController phoneNoController = TextEditingController();
@@ -22,6 +25,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
   void initState() {
     super.initState();
     _isLoading = ValueNotifier<bool>(false);
+    profileProvider = Provider.of<ProfileProvider>(context, listen: false);
   }
 
   @override
@@ -101,8 +105,34 @@ class _UpdateProfileState extends State<UpdateProfile> {
       if (_formKey.currentState!.validate()) {
         if (_isLoading.value) return;
         _isLoading.value = true;
+        final Map<String, dynamic> data = {
+          "name": nameController.text.trim(),
+          "phone_no": phoneNoController.text.trim(),
+          "email": emailNoController.text.trim(),
+        };
+        final result = await profileProvider.updateProfileData(
+          userId: profileProvider.userId,
+          profileData: data,
+        );
+        if (!mounted) return;
+        if (result.isSuccess) {
+          Navigator.pop(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Failed to Update profile data"),
+            ),
+          );
+        }
       }
     } catch (e) {
+      _isLoading.value = false;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Unknown error occurred"),
+        ),
+      );
+    } finally {
       _isLoading.value = false;
     }
   }
