@@ -24,6 +24,10 @@ class HomeProvider extends ChangeNotifier {
     sharedPreferences = await SharedPreferences.getInstance();
   }
 
+  Future<void> subscriptionDispose() async {
+    subscription?.close();
+  }
+
   Future<Result<DocumentList, String>> getGalleryPhotos({required List<String> queries}) async {
     try {
       // List<String> queries = [Query.limit(5)];
@@ -48,7 +52,7 @@ class HomeProvider extends ChangeNotifier {
   }
 
   // Subscribe to realtime changes
-  subscribeToRealtime() {
+  Future<void> subscribeToRealtime() async {
     subscription = realtime.subscribe([
       "databases.${AppwriteConfig.db}.collections.${AppwriteConfig.userCollection}.documents",
     ]);
