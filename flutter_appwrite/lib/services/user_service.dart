@@ -36,7 +36,14 @@ class UserService {
         queries: queries,
       );
       return Result(success: documentList);
-    } catch (e) {
+    } on AppwriteException catch (e, s) {
+      print("getDocumentsList: AppwriteException: $e");
+      print("getDocumentsList: AppwriteException Stack: $s");
+
+      return Result(error: "Unable to fetch documents. Error: $e");
+    } catch (e, s) {
+      print("getDocumentsList: Error: $e");
+      print("getDocumentsList: Error Stack: $s");
       return Result(error: "Unable to fetch documents. Error: $e");
     }
   }
