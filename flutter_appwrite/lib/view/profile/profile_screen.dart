@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_appwrite/provider/auth_provider.dart';
+import 'package:flutter_appwrite/provider/home_provider.dart';
 import 'package:flutter_appwrite/provider/profile_provider.dart';
 import 'package:flutter_appwrite/view/login/login.dart';
 import 'package:flutter_appwrite/view/profile/widget/profile_pic_widget.dart';
@@ -18,6 +19,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   late AuthProvider authProvider;
   late ProfileProvider profileProvider;
+  late HomeProvider homeProvider;
   late SharedPreferences sharedPreferences;
   late ValueNotifier<bool> _isLoading;
 
@@ -26,6 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     authProvider = Provider.of<AuthProvider>(context, listen: false);
     profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    homeProvider = Provider.of<HomeProvider>(context, listen: false);
     _isLoading = ValueNotifier<bool>(false);
     getUserData();
   }
@@ -133,6 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       if (_isLoading.value) return;
       _isLoading.value = true;
+      await homeProvider.subscriptionDispose();
       final logoutResponse = await authProvider.logout();
       if (!mounted) return;
       if (logoutResponse.isSuccess) {

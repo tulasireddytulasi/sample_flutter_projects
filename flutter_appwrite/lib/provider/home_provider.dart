@@ -57,12 +57,12 @@ class HomeProvider extends ChangeNotifier {
       "databases.${AppwriteConfig.db}.collections.${AppwriteConfig.userCollection}.documents",
     ]);
 
-    print("Subscribed to realtime data");
+    print("Subscribed to realtime data: ${subscription?.channels}");
 
     subscription!.stream.listen((data) {
       print("Some event happened");
-      print(data.events);
-      print(data.payload);
+      print("Events happened ${data.events}");
+      print("Data payload ${data.payload}");
       final firstItem = data.events.first.split(".");
       final eventType = firstItem.lastOrNull;
       print("Event type is $eventType");
