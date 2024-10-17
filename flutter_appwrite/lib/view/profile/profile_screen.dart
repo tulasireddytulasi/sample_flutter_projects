@@ -138,6 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _isLoading.value = true;
       await homeProvider.subscriptionDispose();
       final logoutResponse = await authProvider.logout();
+      profileProvider.clearUserData();
       if (!mounted) return;
       if (logoutResponse.isSuccess) {
         Navigator.pushAndRemoveUntil(

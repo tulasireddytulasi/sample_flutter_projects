@@ -37,12 +37,23 @@ class ProfileProvider extends ChangeNotifier {
   String email = "N/A";
   String mobileNo = "N/A";
 
-  List<String> data = [];
+  List<String> _data = [];
+  List<String> get data => _data;
   String filePic = "";
 
   set setIsLoading(bool isLoading) {
     _isLoading = isLoading;
     notifyListeners();
+  }
+
+  void clearUserData() async {
+    userId = "";
+    name = "";
+    email = "";
+    mobileNo = "";
+    profilePicId = "";
+    profilePic = "";
+    _data.clear();
   }
 
   void setUserData() async {
@@ -55,7 +66,7 @@ class ProfileProvider extends ChangeNotifier {
       bucketId: AppwriteConfig.profileBucketId,
     )
         : "";
-    data = [userModel.name.toString(), userModel.email.toString(), userModel.phoneNo.toString()];
+    _data = [userModel.name.toString(), userModel.email.toString(), userModel.phoneNo.toString()];
   }
 
   Future<Result<bool, String>> getUserDetails({required String documentId}) async {
