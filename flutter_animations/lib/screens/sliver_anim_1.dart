@@ -50,7 +50,7 @@ class SliverAppBarAnim1 extends StatelessWidget {
                 )!;
 
                 return FlexibleSpaceBar(
-                  titlePadding: EdgeInsets.only(top: 4, bottom: 4),
+                  titlePadding: EdgeInsets.only(top: 6, bottom: 4),
                   centerTitle: true,
                   background: Image.network(
                     'https://picsum.photos/800/600',
