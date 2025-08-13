@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:users_app/view/home/bloc/home_bloc.dart';
 import 'package:users_app/view/home/home.dart';
+import 'package:users_app/view/second_screen/second_screen.dart' show MyHomePage;
 
 void main() {
   runApp(const MyApp());
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const HomeScreen(),
+        home: const MyHomePage(),
       ),
     );
   }
